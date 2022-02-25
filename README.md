@@ -7,3 +7,7 @@ TODO
 - visibility
 - visibility bitmask
 - caching metadata
+- caching values
+- describe
+- endpoints
+- more tests
