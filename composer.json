@@ -1,0 +1,34 @@
+{
+  "name": "escolalms/model-fields",
+  "description": "Escola LMS model-fields extension.",
+  "type": "package",
+  "require": {
+    "php": ">=7.4",
+    "laravel/framework": ">=8.0",
+    "escolalms/core": "^1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0",
+    "orchestra/testbench": ">=5.0"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mateusz Wojczal",
+      "email": "mateusz@wojczal.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "EscolaLms\\ModelFields\\": "src",
+      "EscolaLms\\ModelFields\\Tests\\": "tests"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "EscolaLms\\ModelFields\\ModelFieldsServiceProvider"
+      ]
+    }
+  }
+}
