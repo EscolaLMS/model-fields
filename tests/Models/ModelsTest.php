@@ -71,7 +71,6 @@ class ModelsTest extends TestCase
     }
 
 
-    /*
 
     public function testDefaultFieldsModel()
     {
@@ -84,12 +83,9 @@ class ModelsTest extends TestCase
 
         $user = User::find($user->id);
 
-        //dd($user->toArray());
-
         $this->assertEquals($user->description, 'lorem ipsum');
         $this->assertEquals($user->interested_in_tests, true);
 
         $this->assertNull($user->title);
     }
-    */
 }
