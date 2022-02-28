@@ -16,9 +16,11 @@ class CreateModelFieldsMetadataTable extends Migration
         Schema::create('model_fields_metadata', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->string('name', 255);
-            $table->enum('type', ['boolean', 'number', 'varchar', 'text'])->default('varchar');
+            $table->string('name', 255)->index();
+            $table->enum('type', ['boolean', 'number', 'varchar', 'text'])->default('varchar'); // this must be compatible with EscolaLms\ModelFields\Enum\MetaFieldTypeEnum::getValues()
             $table->json('rules')->nullable();
+            $table->json('extra')->nullable();
+            $table->text('default')->nullable()->index();
             $table->string('class_type', 255);
         });
     }

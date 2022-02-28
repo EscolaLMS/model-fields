@@ -3,6 +3,8 @@
 namespace EscolaLms\ModelFields;
 
 use Illuminate\Support\ServiceProvider;
+use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
+use EscolaLms\ModelFields\Services\ModelFieldsService;
 
 /**
  * SWAGGER_VERSION
@@ -13,7 +15,7 @@ class ModelFieldsServiceProvider extends ServiceProvider
 
 
     public $singletons = [
-        // JitsiServiceContract::class => JitsiService::class,
+        ModelFieldsServiceContract::class => ModelFieldsService::class,
     ];
 
     /**

@@ -10,4 +10,5 @@ TODO
 - caching values
 - describe
 - endpoints
+- helper for endpoint resources
 - more tests

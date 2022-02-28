@@ -6,21 +6,35 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Models\Metadata;
 use Illuminate\Support\Collection;
-use EscolaLms\ModelFields\Models\Contracts\Model as ModelContract;
 
+use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
+use EscolaLms\ModelFields\Services\ModelFieldsService;
+use Illuminate\Support\Facades\App;
 
-
-abstract class Model extends BaseModel implements ModelContract
+abstract class Model extends BaseModel
 {
+    private ModelFieldsServiceContract $service;
+    private Collection $extraFields;
 
+    public function __construct(array $attributes = [])
+    {
+        $this->service = App::make(ModelFieldsServiceContract::class);
+        parent::__construct($attributes);
+    }
+    // todo this to service
+    /*
     public static function getFieldsMetadata(): Collection
     {
-        return Metadata::where('class_type', get_called_class())->get();
+        return $this->service->getFieldsMetadata(get_called_class());
+        //return Metadata::where('class_type', get_called_class())->get();
     }
+    */
 
+    // todo this to service
     public static function castField($value, $field)
     {
 
+        // move thgiu
         $type = $field['type'];
         switch ($type) {
             case "boolean":
@@ -32,11 +46,24 @@ abstract class Model extends BaseModel implements ModelContract
         }
     }
 
+
     // TODO this should cached somehow
-    private function getExtraAttributesValues()
+    private function getExtraAttributesValues(): array
     {
-        $fields = self::getFieldsMetadata()
+        return $this->service->getExtraAttributesValues($this);
+
+        /*
+
+        $fieldsCol =  self::getFieldsMetadata();
+
+
+        $fields = $fieldsCol
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item])
+            ->toArray();
+
+        $defaults = $fieldsCol
+            ->filter(fn ($value, $key) => !empty($value['default']))
+            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
             ->toArray();
 
         $extraAttributes = $this->fields()
@@ -44,23 +71,32 @@ abstract class Model extends BaseModel implements ModelContract
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
             ->toArray();
 
-        return $extraAttributes;
+        return array_merge($defaults, $extraAttributes);
+        */
     }
+
 
     public function attributesToArray()
     {
         $attributes =  parent::attributesToArray();
-
         $extraAttributes = $this->getExtraAttributesValues();
-
 
         return array_merge($attributes, $extraAttributes);
     }
 
+
     public function fill(array $attributes)
     {
-        $fields = self::getFieldsMetadata();
-        $this->extraFields = $fields->map(fn ($item) => ['name' => $item['name'], 'value' =>  $attributes[$item['name']] ?? '']);
+
+        $field_names = $this->service
+            ->getFieldsMetadata(static::class)
+            ->map(fn ($item) => $item['name'])
+            ->toArray();
+
+        $this->extraFields = collect($attributes)
+            ->filter(fn ($item, $key) => in_array($key, $field_names))
+            ->map(fn ($item, $key) => ['name' => $key, 'value' =>  $item]);
+
         return parent::fill($attributes);
     }
 
