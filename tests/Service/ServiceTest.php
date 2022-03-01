@@ -132,6 +132,16 @@ class ServiceTest extends TestCase
 
         $this->assertEquals($user->description, 'abc');
         $this->assertEquals($user->interested_in_tests, true);
+
+        $user->update([
+            'description' => 'zzz',
+            'interested_in_tests' => false
+        ]);
+
+        $user = User::find($user->id);
+
+        $this->assertEquals($user->description, 'zzz');
+        $this->assertEquals($user->interested_in_tests, false);
     }
 
     public function testDefaultFieldsModel()
