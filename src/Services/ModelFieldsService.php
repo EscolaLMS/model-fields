@@ -38,7 +38,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
     public function getExtraAttributesValues(Model $model): array
     {
 
-        $fieldsCol =  self::getFieldsMetadata($model::class);
+        $fieldsCol =  self::getFieldsMetadata(get_class($model));
 
         $fields = $fieldsCol
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
