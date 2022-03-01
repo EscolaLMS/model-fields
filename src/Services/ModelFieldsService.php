@@ -56,10 +56,14 @@ class ModelFieldsService implements ModelFieldsServiceContract
     {
         $type = $field['type'];
         switch ($type) {
-            case "boolean":
+            case MetaFieldTypeEnum::BOOLEAN:
                 return (bool) intval($value);
-            case "number":
+            case MetaFieldTypeEnum::NUMBER:
                 return (float) ($value);
+            case MetaFieldTypeEnum::JSON:
+                return json_decode($value, true);
+            case MetaFieldTypeEnum::VARCHAR:
+            case MetaFieldTypeEnum::TEXT:
             default:
                 return $value;
         }

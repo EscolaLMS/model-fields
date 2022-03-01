@@ -1,6 +1,6 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\Models;
+namespace EscolaLms\ModelFields\Tests\Service;
 
 use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Tests\TestCase;
@@ -13,7 +13,7 @@ use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 
-class ModelsTest extends TestCase
+class ServiceTest extends TestCase
 {
 
     use DatabaseTransactions;
@@ -48,7 +48,16 @@ class ModelsTest extends TestCase
             '',
             ['required', 'string', 'max:255']
         );
+
+        $this->service->addOrUpdateMetadataField(
+            User::class,
+            'consents',
+            'json',
+            '[]',
+            ['required', 'json']
+        );
     }
+
 
     public function testInvalidType()
     {
@@ -93,7 +102,8 @@ class ModelsTest extends TestCase
         $extraAttributes = [
             'description' => 'aaa',
             'interested_in_tests' => false,
-            'aaaa' => 'aaaa'
+            'aaaa' => 'aaaa',
+            'consents' => ['consent1' => true, 'consent2' => false]
         ];
 
 
@@ -107,15 +117,13 @@ class ModelsTest extends TestCase
 
         $user = User::find($user->id);
 
-
         $this->assertEquals($user->description, $extraAttributes['description']);
         $this->assertEquals($user->interested_in_tests, $extraAttributes['interested_in_tests']);
 
+        $this->assertEquals($user->consents, $extraAttributes['consents']);
 
         $this->assertNull($user->aaaa);
     }
-
-
 
     public function testDefaultFieldsModel()
     {

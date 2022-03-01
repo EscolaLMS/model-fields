@@ -10,4 +10,5 @@ class MetaFieldTypeEnum extends BasicEnum
     const NUMBER   = 'number';
     const VARCHAR   = 'varchar';
     const TEXT  = 'text';
+    const JSON  = 'json';
 }

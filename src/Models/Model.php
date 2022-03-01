@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
+use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 
 abstract class Model extends BaseModel
 {
@@ -36,18 +37,32 @@ abstract class Model extends BaseModel
         return array_merge($attributes, $extraAttributes);
     }
 
+    private function convertValueForFill(mixed $value, array $field): string
+    {
+        $type = $field['type'];
+        switch ($type) {
+            case MetaFieldTypeEnum::JSON:
+                return json_encode($value);
+            case MetaFieldTypeEnum::BOOLEAN:
+            case MetaFieldTypeEnum::NUMBER:
+            case MetaFieldTypeEnum::VARCHAR:
+            case MetaFieldTypeEnum::TEXT:
+            default:
+                return (string) $value;
+        }
+    }
+
 
     public function fill(array $attributes)
     {
-
-        $field_names = $this->service
+        $fields = $this->service
             ->getFieldsMetadata(static::class)
-            ->map(fn ($item) => $item['name'])
+            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item])
             ->toArray();
 
         $this->extraFields = collect($attributes)
-            ->filter(fn ($item, $key) => in_array($key, $field_names))
-            ->map(fn ($item, $key) => ['name' => $key, 'value' =>  $item]);
+            ->filter(fn ($item, $key) => in_array($key, array_keys($fields)))
+            ->map(fn ($item, $key) => ['name' => $key, 'value' =>  self::convertValueForFill($item, $fields[$key])]);
 
         return parent::fill($attributes);
     }
