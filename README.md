@@ -164,7 +164,9 @@ TODO
 - more tests for different update/save methods √
 - deleting model cascade with fields √
 
+- delete meta fields with model fields
 - endpoints
+- delete endpoint
 - helper for endpoint resources
 - visibility
 - visibility bitmask
