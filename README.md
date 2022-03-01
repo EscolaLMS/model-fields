@@ -140,6 +140,16 @@ $user = User::find($user->id); // fetch user from database
 
 assert($user->description === 'abc');
 assert($user->interested_in_tests === true);
+
+$user->update([
+    'description' => 'zzz',
+    'interested_in_tests' => false
+]);
+
+$user = User::find($user->id);  // fetch user from database
+
+assert($user->description === 'zzz');
+assert($user->interested_in_tests === false);
 ```
 
 TODO
@@ -150,15 +160,24 @@ TODO
 - caching values √
 - validation √
 - json value √
+  <<<<<<< HEAD
 - describe
-- more tests for different update/save methods
+- # more tests for different update/save methods
+- describe √
+- more tests for different update/save methods √
+  > > > > > > > feature/refactor1
 - deleting model cascade with fields √
 
 - endpoints
 - helper for endpoint resources
 - visibility
 - visibility bitmask
+  <<<<<<< HEAD
 
 ```
 
 ```
+
+=======
+
+> > > > > > > feature/refactor1
