@@ -37,7 +37,7 @@ abstract class Model extends BaseModel
         return array_merge($attributes, $extraAttributes);
     }
 
-    private function convertValueForFill(mixed $value, array $field): string
+    private function convertValueForFill($value, array $field): string
     {
         $type = $field['type'];
         switch ($type) {

@@ -52,7 +52,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return Cache::tags([$tag])->get($key);
     }
 
-    public function castField(mixed $value, Metadata $field): mixed
+    public function castField($value, Metadata $field)
     {
         $type = $field['type'];
         switch ($type) {
