@@ -2,14 +2,14 @@
 
 TODO
 
-- enum for types
-- default value
+- enum for types √
+- default value √
 - visibility
 - visibility bitmask
-- caching metadata
-- caching values
+- caching metadata √
+- caching values √
 - describe
 - endpoints
 - helper for endpoint resources
 - more tests
-- deleting model cascade with fields
+- deleting model cascade with fields √

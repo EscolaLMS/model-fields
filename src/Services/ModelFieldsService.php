@@ -10,21 +10,26 @@ use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cache;
+
 
 class ModelFieldsService implements ModelFieldsServiceContract
 {
+
 
     public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null): Metadata
     {
         if (!MetaFieldTypeEnum::hasValue($type)) {
             throw ValidationException::withMessages([
-                'type' => [sprintf('type must be one of %s'), implode(MetaFieldTypeEnum::getValues())],
+                'type' => [sprintf('type must be one of %s', implode(",", MetaFieldTypeEnum::getValues()))],
             ]);
         }
         return Metadata::updateOrCreate(
             ['class_type' => $class_type, 'name' => $name],
             ['type' => $type, 'default' => $default, 'rules' => $rules]
         );
+
+        Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
     }
 
     public function removeMetaField(string $class_type, string $name): bool
@@ -32,12 +37,19 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return  Metadata::where(
             ['class_type' => $class_type, 'name' => $name]
         )->delete();
+
+        Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
     }
 
-    // TODO: cache this 
     public function getFieldsMetadata(string $class_type): Collection
     {
-        return Metadata::where('class_type', $class_type)->get();
+        $key = sprintf("modelfields.meta.%s", $class_type);
+        $tag = sprintf("modelfields.%s", $class_type);
+        if (!Cache::has($key)) {
+            $fields = Metadata::where('class_type', $class_type)->get();
+            Cache::tags([$tag])->put($key, $fields);
+        }
+        return Cache::tags([$tag])->get($key);
     }
 
     public function castField(mixed $value, Metadata $field): mixed
@@ -53,11 +65,8 @@ class ModelFieldsService implements ModelFieldsServiceContract
         }
     }
 
-
-    // TODO this should cached somehow
     public function getExtraAttributesValues(Model $model): array
     {
-
         $fieldsCol =  self::getFieldsMetadata(get_class($model));
 
         $fields = $fieldsCol

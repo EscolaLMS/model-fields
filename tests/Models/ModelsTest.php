@@ -8,38 +8,83 @@ use EscolaLms\ModelFields\Tests\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
+use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
+use EscolaLms\ModelFields\Services\ModelFieldsService;
+use Illuminate\Support\Facades\App;
+use Illuminate\Validation\ValidationException;
 
 class ModelsTest extends TestCase
 {
 
     use DatabaseTransactions;
+    private ModelFieldsServiceContract $service;
 
     public function setUp(): void
     {
         parent::setUp();
-        Metadata::create([
-            'class_type' => User::class,
-            'name' => 'description',
-            'type' => 'text',
-            'default' => 'lorem ipsum',
-            'rules' => ['required', 'string', 'max:255'],
-        ]);
 
-        Metadata::create([
-            'class_type' => User::class,
-            'name' => 'interested_in_tests',
-            'default' => true,
-            'type' => 'boolean',
-            'rules' => ['required', 'boolean'],
-        ]);
+        $this->service = App::make(ModelFieldsServiceContract::class);
 
-        Metadata::create([
-            'class_type' => User::class,
-            'name' => 'title',
-            'default' => '',
-            'type' => 'varchar',
-            'rules' => ['required', 'string', 'max:255'],
-        ]);
+        $this->service->addOrUpdateMetadataField(
+            User::class,
+            'description',
+            'text',
+            'lorem ipsum',
+            ['required', 'string', 'max:255']
+        );
+
+        $this->service->addOrUpdateMetadataField(
+            User::class,
+            'interested_in_tests',
+            'boolean',
+            true,
+            ['required', 'boolean']
+        );
+
+        $this->service->addOrUpdateMetadataField(
+            User::class,
+            'title',
+            'varchar',
+            '',
+            ['required', 'string', 'max:255']
+        );
+    }
+
+    public function testInvalidType()
+    {
+
+        $this->expectException(ValidationException::class);
+
+        $this->service->addOrUpdateMetadataField(
+            User::class,
+            'title',
+            'invalid_type',
+            '',
+            ['required', 'string', 'max:255']
+        );
+    }
+
+    public function testDeleteFields()
+    {
+        $extraAttributes = [
+            'description' => 'aaa',
+            'interested_in_tests' => false,
+            'aaaa' => 'aaaa'
+        ];
+
+        $user = User::create(array_merge([
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'email' => 'aaa@email.com',
+        ], $extraAttributes));
+
+        $user = User::find($user->id);
+
+        $this->assertEquals(Field::all()->count(), 2);
+
+        $user->delete();
+
+        $this->assertEquals(Field::all()->count(), 0);
     }
 
 

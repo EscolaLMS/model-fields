@@ -21,58 +21,10 @@ abstract class Model extends BaseModel
         $this->service = App::make(ModelFieldsServiceContract::class);
         parent::__construct($attributes);
     }
-    // todo this to service
-    /*
-    public static function getFieldsMetadata(): Collection
-    {
-        return $this->service->getFieldsMetadata(get_called_class());
-        //return Metadata::where('class_type', get_called_class())->get();
-    }
-    */
 
-    // todo this to service
-    public static function castField($value, $field)
-    {
-
-        // move thgiu
-        $type = $field['type'];
-        switch ($type) {
-            case "boolean":
-                return (bool) intval($value);
-            case "number":
-                return (float) ($value);
-            default:
-                return $value;
-        }
-    }
-
-
-    // TODO this should cached somehow
     private function getExtraAttributesValues(): array
     {
         return $this->service->getExtraAttributesValues($this);
-
-        /*
-
-        $fieldsCol =  self::getFieldsMetadata();
-
-
-        $fields = $fieldsCol
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item])
-            ->toArray();
-
-        $defaults = $fieldsCol
-            ->filter(fn ($value, $key) => !empty($value['default']))
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
-            ->toArray();
-
-        $extraAttributes = $this->fields()
-            ->get()
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
-            ->toArray();
-
-        return array_merge($defaults, $extraAttributes);
-        */
     }
 
 
@@ -125,6 +77,12 @@ abstract class Model extends BaseModel
         }
 
         return $attribute;
+    }
+
+    public function delete()
+    {
+        $this->fields()->delete();
+        parent::delete();
     }
 
     public function fields()
