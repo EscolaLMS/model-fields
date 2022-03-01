@@ -12,3 +12,4 @@ TODO
 - endpoints
 - helper for endpoint resources
 - more tests
+- deleting model cascade with fields

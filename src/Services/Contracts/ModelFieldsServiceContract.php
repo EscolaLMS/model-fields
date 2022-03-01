@@ -8,6 +8,11 @@ use Illuminate\Support\Collection;
 
 interface ModelFieldsServiceContract
 {
+
+    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null): Metadata;
+
+    public function removeMetaField(string $class_type, string $name);
+
     public function getFieldsMetadata(string $class_type): Collection;
 
     public function castField(mixed $value, Metadata $field): mixed;

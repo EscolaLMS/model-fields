@@ -8,18 +8,38 @@ use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Models\Model;
 use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
-
-
+use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
+use Illuminate\Validation\ValidationException;
 
 class ModelFieldsService implements ModelFieldsServiceContract
 {
-    // todo this to service
+
+    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null): Metadata
+    {
+        if (!MetaFieldTypeEnum::hasValue($type)) {
+            throw ValidationException::withMessages([
+                'type' => [sprintf('type must be one of %s'), implode(MetaFieldTypeEnum::getValues())],
+            ]);
+        }
+        return Metadata::updateOrCreate(
+            ['class_type' => $class_type, 'name' => $name],
+            ['type' => $type, 'default' => $default, 'rules' => $rules]
+        );
+    }
+
+    public function removeMetaField(string $class_type, string $name): bool
+    {
+        return  Metadata::where(
+            ['class_type' => $class_type, 'name' => $name]
+        )->delete();
+    }
+
+    // TODO: cache this 
     public function getFieldsMetadata(string $class_type): Collection
     {
         return Metadata::where('class_type', $class_type)->get();
     }
 
-    // todo this to service
     public function castField(mixed $value, Metadata $field): mixed
     {
         $type = $field['type'];
@@ -42,7 +62,6 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
         $fields = $fieldsCol
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
-
 
         $defaults = $fieldsCol
             ->filter(fn ($value, $key) => !empty($value['default']))
