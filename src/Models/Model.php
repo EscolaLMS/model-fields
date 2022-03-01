@@ -94,6 +94,32 @@ abstract class Model extends BaseModel
         return $attribute;
     }
 
+    public function setAttribute($key, $value)
+    {
+
+        $metaFields = $this->service
+            ->getFieldsMetadata(static::class)
+            ->mapWithKeys(fn ($item) =>  [$item['name'] => $item])
+            ->toArray();
+
+        if (array_key_exists($key, $metaFields)) {
+
+            $this->extraFields = isset($this->extraFields) ? $this->extraFields->prepend(['name' => 'description', 'value' => $value]) : collect([
+                ['name' => 'description', 'value' => $value]
+            ]);
+            return;
+        }
+
+        return parent::setAttribute($key, $value);
+
+
+        if (array_key_exists($key, $fields)) {
+            return $fields[$key];
+        } else {
+            return parent::setAttribute($key, $value);
+        }
+    }
+
     public function delete()
     {
         $this->fields()->delete();

@@ -123,6 +123,15 @@ class ServiceTest extends TestCase
         $this->assertEquals($user->consents, $extraAttributes['consents']);
 
         $this->assertNull($user->aaaa);
+
+        $user->description = 'abc';
+        $user->interested_in_tests = true;
+        $user->save();
+
+        $user = User::find($user->id);
+
+        $this->assertEquals($user->description, 'abc');
+        $this->assertEquals($user->interested_in_tests, true);
     }
 
     public function testDefaultFieldsModel()
