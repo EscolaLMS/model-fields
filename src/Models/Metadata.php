@@ -15,27 +15,32 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  *      schema="ModelField",
  *      @OA\Property(
  *          property="id",
- *          description="template id",
+ *          description="id",
  *          type="integer",
  *      ),
  *      @OA\Property(
  *          property="name",
- *          description="template name",
+ *          description="name",
  *          type="string"
  *      ),
  *      @OA\Property(
  *          property="value",
- *          description="",
+ *          description="value",
+ *          type="string"
+ *      ),
+ *      @OA\Property(
+ *          property="default",
+ *          description="default",
  *          type="string"
  *      ),
  *      @OA\Property(
  *          property="class_type",
- *          description="",
+ *          description="class_type",
  *          type="string"
  *      ),
  *      @OA\Property(
  *          property="class_id",
- *          description="",
+ *          description="class_id",
  *          type="string"
  *      ),
  * )
@@ -48,6 +53,7 @@ class Metadata extends Model
         'id' => 'integer',
         'name' => 'string',
         'type' => 'string',
+        'default' => 'string',
         'rules' => 'array',
         'class_type' => 'string',
     ];

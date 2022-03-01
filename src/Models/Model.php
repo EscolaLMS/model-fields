@@ -6,61 +6,64 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Models\Metadata;
 use Illuminate\Support\Collection;
-use EscolaLms\ModelFields\Models\Contracts\Model as ModelContract;
 
+use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
+use EscolaLms\ModelFields\Services\ModelFieldsService;
+use Illuminate\Support\Facades\App;
+use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 
-
-abstract class Model extends BaseModel implements ModelContract
+abstract class Model extends BaseModel
 {
+    private ModelFieldsServiceContract $service;
+    private Collection $extraFields;
 
-    public static function getFieldsMetadata(): Collection
+    public function __construct(array $attributes = [])
     {
-        return Metadata::where('class_type', get_called_class())->get();
+        $this->service = App::make(ModelFieldsServiceContract::class);
+        parent::__construct($attributes);
     }
 
-    public static function castField($value, $field)
+    private function getExtraAttributesValues(): array
     {
-
-        $type = $field['type'];
-        switch ($type) {
-            case "boolean":
-                return (bool) intval($value);
-            case "number":
-                return (float) ($value);
-            default:
-                return $value;
-        }
+        return $this->service->getExtraAttributesValues($this);
     }
 
-    // TODO this should cached somehow
-    private function getExtraAttributesValues()
-    {
-        $fields = self::getFieldsMetadata()
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item])
-            ->toArray();
-
-        $extraAttributes = $this->fields()
-            ->get()
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
-            ->toArray();
-
-        return $extraAttributes;
-    }
 
     public function attributesToArray()
     {
         $attributes =  parent::attributesToArray();
-
         $extraAttributes = $this->getExtraAttributesValues();
-
 
         return array_merge($attributes, $extraAttributes);
     }
 
+    private function convertValueForFill($value, array $field): string
+    {
+        $type = $field['type'];
+        switch ($type) {
+            case MetaFieldTypeEnum::JSON:
+                return json_encode($value);
+            case MetaFieldTypeEnum::BOOLEAN:
+            case MetaFieldTypeEnum::NUMBER:
+            case MetaFieldTypeEnum::VARCHAR:
+            case MetaFieldTypeEnum::TEXT:
+            default:
+                return (string) $value;
+        }
+    }
+
+
     public function fill(array $attributes)
     {
-        $fields = self::getFieldsMetadata();
-        $this->extraFields = $fields->map(fn ($item) => ['name' => $item['name'], 'value' =>  $attributes[$item['name']] ?? '']);
+        $fields = $this->service
+            ->getFieldsMetadata(static::class)
+            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item])
+            ->toArray();
+
+        $this->extraFields = collect($attributes)
+            ->filter(fn ($item, $key) => in_array($key, array_keys($fields)))
+            ->map(fn ($item, $key) => ['name' => $key, 'value' =>  self::convertValueForFill($item, $fields[$key])]);
+
         return parent::fill($attributes);
     }
 
@@ -89,6 +92,38 @@ abstract class Model extends BaseModel implements ModelContract
         }
 
         return $attribute;
+    }
+
+    public function setAttribute($key, $value)
+    {
+
+        $metaFields = $this->service
+            ->getFieldsMetadata(static::class)
+            ->mapWithKeys(fn ($item) =>  [$item['name'] => $item])
+            ->toArray();
+
+        if (array_key_exists($key, $metaFields)) {
+
+            $this->extraFields = isset($this->extraFields) ? $this->extraFields->prepend(['name' => 'description', 'value' => $value]) : collect([
+                ['name' => 'description', 'value' => $value]
+            ]);
+            return;
+        }
+
+        return parent::setAttribute($key, $value);
+
+
+        if (array_key_exists($key, $fields)) {
+            return $fields[$key];
+        } else {
+            return parent::setAttribute($key, $value);
+        }
+    }
+
+    public function delete()
+    {
+        $this->fields()->delete();
+        parent::delete();
     }
 
     public function fields()
