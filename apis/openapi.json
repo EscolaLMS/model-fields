@@ -186,6 +186,10 @@
                         "description": "extra",
                         "type": "object"
                     },
+                    "visibility": {
+                        "description": "visibility",
+                        "type": "object"
+                    },
                     "class_type": {
                         "description": "class_type",
                         "type": "string"
