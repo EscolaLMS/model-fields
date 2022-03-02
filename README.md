@@ -160,24 +160,13 @@ TODO
 - caching values √
 - validation √
 - json value √
-  <<<<<<< HEAD
-- describe
-- # more tests for different update/save methods
 - describe √
 - more tests for different update/save methods √
-  > > > > > > > feature/refactor1
 - deleting model cascade with fields √
 
+- delete meta fields with model fields
 - endpoints
+- delete endpoint
 - helper for endpoint resources
 - visibility
 - visibility bitmask
-  <<<<<<< HEAD
-
-```
-
-```
-
-=======
-
-> > > > > > > feature/refactor1

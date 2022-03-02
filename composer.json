@@ -8,6 +8,7 @@
     "escolalms/core": "^1"
   },
   "require-dev": {
+    "escolalms/auth": "^0",
     "phpunit/phpunit": "^9.0",
     "orchestra/testbench": ">=5.0"
   },
@@ -21,7 +22,8 @@
   "autoload": {
     "psr-4": {
       "EscolaLms\\ModelFields\\": "src",
-      "EscolaLms\\ModelFields\\Tests\\": "tests"
+      "EscolaLms\\ModelFields\\Tests\\": "tests",
+      "EscolaLms\\ModelFields\\Database\\Seeders\\": "database/seeders"
     }
   },
   "extra": {

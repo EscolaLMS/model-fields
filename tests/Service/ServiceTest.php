@@ -13,6 +13,7 @@ use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 
+
 class ServiceTest extends TestCase
 {
 
