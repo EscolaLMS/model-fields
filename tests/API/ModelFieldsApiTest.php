@@ -79,7 +79,6 @@ class ModelFieldsApiTest extends TestCase
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
 
         $this->assertEquals(count($result->getData()->data), count($metaFields));
-
         $this->assertEquals($result->getData()->data[0]->name, $metaFields[0]['name']);
     }
 
@@ -87,18 +86,37 @@ class ModelFieldsApiTest extends TestCase
     {
         $input = [
             'class_type' => User::class,
-            'name' => 'extra_description',
+            'name' => 'description',
             'type' => MetaFieldTypeEnum::TEXT,
             'default' => 'lorem ipsum',
             'rules' => json_encode(['required', 'string', 'max:255'])
         ];
         $result = $this->actingAs($this->user, 'api')->postJson('/api/admin/model-fields', $input);
 
-        $result->assertStatus(201);
+        $result->assertStatus(200);
 
         $this->assertEquals($result->getData()->data->class_type, $input['class_type']);
         $this->assertEquals($result->getData()->data->name, $input['name']);
         $this->assertEquals($result->getData()->data->type, $input['type']);
+    }
+
+    public function testDeleteMeta()
+    {
+        $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
+
+        $this->assertEquals(collect($result->getData()->data)->contains(fn ($item) => $item->name === 'description'), true);
+
+        $input = [
+            'class_type' => User::class,
+            'name' => 'description',
+        ];
+        $result = $this->actingAs($this->user, 'api')->deleteJson('/api/admin/model-fields', $input);
+
+        $result->assertOk();
+
+        $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
+
+        $this->assertEquals(collect($result->getData()->data)->contains(fn ($item) => $item->name === 'description'), false);
     }
 
     /*

@@ -23,6 +23,9 @@ class MetadataDeleteRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'name' => ['required', 'string'],
+            'class_type' => ['required', 'string'],
+        ];
     }
 }

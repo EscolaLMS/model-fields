@@ -39,11 +39,13 @@ abstract class Model extends BaseModel
 
     private function convertValueForFill($value, array $field): string
     {
+
         $type = $field['type'];
         switch ($type) {
             case MetaFieldTypeEnum::JSON:
                 return json_encode($value);
             case MetaFieldTypeEnum::BOOLEAN:
+                return $value ? "true" : "";
             case MetaFieldTypeEnum::NUMBER:
             case MetaFieldTypeEnum::VARCHAR:
             case MetaFieldTypeEnum::TEXT:
@@ -73,8 +75,8 @@ abstract class Model extends BaseModel
         unset($this->extraFields);
         $savedState = parent::save($options);
         $values = $extraFields->toArray();
-        // FIXME: This is stupid, there should a way to handle updateOrCreate on polymorphic one-to-many
-        $this->fields()->delete();
+        $names = $extraFields->map(fn ($item) => $item['name'])->toArray();
+        $this->fields()->whereIn('name', $names)->delete();
         $this->fields()->createMany($values);
         return $savedState;
     }
@@ -104,20 +106,13 @@ abstract class Model extends BaseModel
 
         if (array_key_exists($key, $metaFields)) {
 
-            $this->extraFields = isset($this->extraFields) ? $this->extraFields->prepend(['name' => 'description', 'value' => $value]) : collect([
-                ['name' => 'description', 'value' => $value]
+            $this->extraFields = isset($this->extraFields) ? $this->extraFields->prepend(['name' => $key, 'value' => $value]) : collect([
+                ['name' => $key, 'value' => $value]
             ]);
             return;
         }
 
         return parent::setAttribute($key, $value);
-
-
-        if (array_key_exists($key, $fields)) {
-            return $fields[$key];
-        } else {
-            return parent::setAttribute($key, $value);
-        }
     }
 
     public function delete()
