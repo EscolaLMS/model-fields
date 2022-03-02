@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 interface ModelFieldsServiceContract
 {
 
-    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null): Metadata;
+    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, $visibility = 1 << 0): Metadata;
 
     public function removeMetaField(string $class_type, string $name);
 
@@ -17,5 +17,5 @@ interface ModelFieldsServiceContract
 
     public function castField($value, Metadata $field);
 
-    public function getExtraAttributesValues(Model $model): array;
+    public function getExtraAttributesValues(Model $model, $visibility = null): array;
 }

@@ -10,6 +10,7 @@ use EscolaLms\ModelFields\ModelFieldsServiceProvider;
 use EscolaLms\Auth\Models\User;
 use EscolaLms\ModelFields\Database\Seeders\PermissionTableSeeder;
 // use GuzzleHttp\Client;
+use EscolaLms\ModelFields\Tests\TestModelFieldsServiceProvider;
 
 
 class TestCase extends CoreTestCase
@@ -30,6 +31,7 @@ class TestCase extends CoreTestCase
         return [
             ...parent::getPackageProviders($app),
             ModelFieldsServiceProvider::class,
+            TestModelFieldsServiceProvider::class,
         ];
     }
 

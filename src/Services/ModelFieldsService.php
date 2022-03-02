@@ -17,7 +17,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
 {
 
 
-    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null): Metadata
+    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, $visibility = 1 << 0): Metadata
     {
         if (!MetaFieldTypeEnum::hasValue($type)) {
             throw ValidationException::withMessages([
@@ -26,7 +26,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
         }
         return Metadata::updateOrCreate(
             ['class_type' => $class_type, 'name' => $name],
-            ['type' => $type, 'default' => $default, 'rules' => $rules]
+            ['type' => $type, 'default' => $default, 'rules' => $rules, 'visibility' => $visibility]
         );
 
         Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
@@ -75,20 +75,26 @@ class ModelFieldsService implements ModelFieldsServiceContract
         }
     }
 
-    public function getExtraAttributesValues(Model $model): array
+    public function getExtraAttributesValues(Model $model, $visibility = null): array
     {
-        $fieldsCol =  self::getFieldsMetadata(get_class($model));
+        $fieldsCol = self::getFieldsMetadata(get_class($model));
 
         $fields = $fieldsCol
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
 
+        $visibilities = $fieldsCol
+            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item['visibility']])
+            ->toArray();
+
         $defaults = $fieldsCol
             ->filter(fn ($value, $key) => !empty($value['default']))
+            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
             ->toArray();
 
         $extraAttributes = $model->fields()
             ->get()
+            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
             ->toArray();
 

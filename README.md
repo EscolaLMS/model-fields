@@ -8,7 +8,6 @@
 [![downloads](https://img.shields.io/packagist/dt/escolalms/model-fields)](https://packagist.org/packages/escolalms/model-fields)
 [![downloads](https://img.shields.io/packagist/v/escolalms/model-fields)](https://packagist.org/packages/escolalms/model-fields)
 [![downloads](https://img.shields.io/packagist/l/escolalms/model-fields)](https://packagist.org/packages/escolalms/model-fields)
-
 [![Maintainability](https://api.codeclimate.com/v1/badges/2418459a02bbf642253e/maintainability)](https://codeclimate.com/github/EscolaLMS/model-fields/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/2418459a02bbf642253e/test_coverage)](https://codeclimate.com/github/EscolaLMS/model-fields/test_coverage)
 
@@ -96,7 +95,8 @@ Interface of this method is as follows
 ```php
 use EscolaLms\ModelFields\Models\Metadata;
 
-public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null): Metadata;
+public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, $visibility = 1 << 0): Metadata;
+
 
 ```
 
@@ -164,7 +164,125 @@ assert($user->description === 'zzz');
 assert($user->interested_in_tests === false);
 ```
 
-TODO
+### Resources and fields visibility
+
+Using resources is simple, look at the following example
+
+```php
+namespace EscolaLms\ModelFields\Tests\Http\Resources;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+use EscolaLms\ModelFields\Tests\Models\User;
+use EscolaLms\ModelFields\Facades\ModelFields;
+use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
+
+class UserResource extends JsonResource
+{
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+    public function toArray($request)
+    {
+        return [
+            'id' => $this->user->id,
+            'first_name' => $this->user->first_name,
+            'last_name'  => $this->user->last_name,
+            'email' => $this->user->email,
+            ...ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::PUBLIC) //  MetaFieldVisibilityEnum::PUBLIC === 1
+        ];
+    }
+}
+
+```
+
+Note the visibility field in example above. Package allows to define visibility of the meta fields. Here we're defining 2 fields, one is public, second admin only
+
+```php
+
+use EscolaLms\ModelFields\Facades\ModelFields;
+use EscolaLms\ModelFields\Facades\ModelFields;
+
+ModelFields::addOrUpdateMetadataField(
+    User::class,
+    'title',
+    'varchar',
+    '',
+    ['required', 'string', 'max:255']
+);
+
+ModelFields::addOrUpdateMetadataField(
+    User::class,
+    'admin_secret',
+    'varchar',
+    'super_secret',
+    ['required', 'string', 'max:255'],
+    MetaFieldVisibilityEnum::ADMIN
+);
+
+```
+
+Now we can have 2 endpoints one that list user with public fields, other with visible to admin only.
+
+```php
+namespace EscolaLms\ModelFields\Tests\Http\Resources;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+use EscolaLms\ModelFields\Tests\Models\User;
+use EscolaLms\ModelFields\Facades\ModelFields;
+use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
+
+class UserResource extends JsonResource
+{
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+    public function toArray($request)
+    {
+        return [
+            'first_name' => $this->user->first_name,
+            'last_name'  => $this->user->last_name,
+            'email' => $this->user->email,
+            ...ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::PUBLIC)
+        ];
+    }
+}
+
+```
+
+Now let's see how Admin Resource would look like.
+
+```php
+namespace EscolaLms\ModelFields\Tests\Http\Resources;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+use EscolaLms\ModelFields\Tests\Models\User;
+use EscolaLms\ModelFields\Facades\ModelFields;
+use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
+
+class UserAdminResource extends JsonResource
+{
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+    public function toArray($request)
+    {
+        return [
+            'id' => $this->user->id,
+            'first_name' => $this->user->first_name,
+            'last_name'  => $this->user->last_name,
+            'email' => $this->user->email,
+            ...ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::ADMIN)
+        ];
+    }
+}
+
+```
 
 - enum for types √
 - default value √
@@ -186,3 +304,7 @@ TODO
 - visibility
 - visibility bitmask
 - trait
+
+```
+
+```

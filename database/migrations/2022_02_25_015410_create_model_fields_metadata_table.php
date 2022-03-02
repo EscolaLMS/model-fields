@@ -22,6 +22,7 @@ class CreateModelFieldsMetadataTable extends Migration
             $table->json('extra')->nullable();
             $table->text('default')->nullable()->index();
             $table->string('class_type', 255)->index();
+            $table->integer('visibility')->default(1 << 0);
         });
     }
 
