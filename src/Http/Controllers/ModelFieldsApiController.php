@@ -11,6 +11,7 @@ use EscolaLms\ModelFields\Http\Controllers\Contracts\ModelFieldsApiContract;
 use EscolaLms\ModelFields\Http\Resources\MetadataResource;
 use Illuminate\Http\Request;
 use EscolaLms\ModelFields\Http\Requests\MetadataCreateOrUpdateRequest;
+use EscolaLms\ModelFields\Http\Requests\MetadataDeleteRequest;
 
 class ModelFieldsApiController extends EscolaLmsBaseController implements ModelFieldsApiContract
 {
@@ -44,6 +45,18 @@ class ModelFieldsApiController extends EscolaLmsBaseController implements ModelF
         );
 
         return $this->sendResponseForResource(MetadataResource::make($field), "meta field created or updated successfully");
+    }
+
+    public function delete(MetadataDeleteRequest $request): JsonResponse
+    {
+        $input = $request->all();
+
+        $bool = $this->service->removeMetaField(
+            $input['class_type'],
+            $input['name'],
+        );
+
+        return $bool ? $this->sendResponse(true, "meta field deleted successfully") : $this->sendError("meta field delete error", 404);
     }
 
     /*

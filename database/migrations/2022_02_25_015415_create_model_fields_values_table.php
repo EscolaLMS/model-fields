@@ -16,7 +16,7 @@ class CreateModelFieldsValuesTable extends Migration
         Schema::create('model_fields_values', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->string('name', 127);
+            $table->string('name', 127)->index();
             $table->text('value');
             $table->morphs('class');
         });

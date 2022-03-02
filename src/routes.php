@@ -11,4 +11,5 @@ Route::group(['prefix' => 'api/model-fields'], function () {
 
 Route::group(['prefix' => 'api/admin/model-fields', 'middleware' => ['auth:api']], function () {
     Route::post('/', [ModelFieldsApiController::class, 'createOrUpdate']);
+    Route::delete('/', [ModelFieldsApiController::class, 'delete']);
 });
