@@ -34,11 +34,17 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public function removeMetaField(string $class_type, string $name): bool
     {
-        return  Metadata::where(
+        $bool = Metadata::where(
+            ['class_type' => $class_type, 'name' => $name]
+        )->delete();
+
+        Field::where(
             ['class_type' => $class_type, 'name' => $name]
         )->delete();
 
         Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
+
+        return $bool;
     }
 
     public function getFieldsMetadata(string $class_type): Collection

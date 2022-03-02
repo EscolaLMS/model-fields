@@ -162,9 +162,15 @@ TODO
 - json value √
 - describe √
 - more tests for different update/save methods √
-- deleting model cascade with fields √
+- sync in FIXME √
+- filling one field might delete √
 
-- endpoints
+- deleting model cascade with fields √
+- delete meta fields with model fields √
+- delete endpoint √
+
+- fasade
 - helper for endpoint resources
 - visibility
 - visibility bitmask
+- trait

@@ -13,6 +13,7 @@ use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 
+
 class ServiceTest extends TestCase
 {
 
@@ -96,6 +97,44 @@ class ServiceTest extends TestCase
         $this->assertEquals(Field::all()->count(), 0);
     }
 
+    public function testDeleteMetaFields()
+    {
+
+        $this->service->addOrUpdateMetadataField(
+            User::class,
+            'extra_description',
+            MetaFieldTypeEnum::TEXT,
+            'lorem ipsum',
+            ['required', 'string', 'max:255']
+        );
+
+        $extraAttributes = [
+            'extra_description' => 'xyz',
+
+        ];
+
+        $user = User::create(array_merge([
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'email' => 'aaa@email.com',
+        ], $extraAttributes));
+
+        $user = User::find($user->id);
+
+        $this->assertEquals($user->extra_description, 'xyz');
+
+        $this->assertEquals(Field::all()->count(), 1);
+
+        $this->service->removeMetaField(
+            User::class,
+            'extra_description'
+        );
+
+        $this->assertNull($user->extra_description);
+
+        $this->assertEquals(Field::all()->count(), 0);
+    }
+
 
     public function testModel()
     {
@@ -142,6 +181,16 @@ class ServiceTest extends TestCase
 
         $this->assertEquals($user->description, 'zzz');
         $this->assertEquals($user->interested_in_tests, false);
+
+        // update only one attribute, rest should remain untouched
+        $user->update([
+            'interested_in_tests' => true
+        ]);
+
+        $this->assertEquals($user->description, 'zzz');
+        $this->assertEquals($user->interested_in_tests, false);
+
+        // 
     }
 
     public function testDefaultFieldsModel()

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @OA\Schema(
- *      schema="ModelField",
+ *      schema="Metadata",
  *      @OA\Property(
  *          property="id",
  *          description="id",
@@ -32,6 +32,16 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  *          property="default",
  *          description="default",
  *          type="string"
+ *      ),
+ *      @OA\Property(
+ *          property="rules",
+ *          description="rules",
+ *          type="object"
+ *      ),
+ *      @OA\Property(
+ *          property="extra",
+ *          description="extra",
+ *          type="object"
  *      ),
  *      @OA\Property(
  *          property="class_type",
