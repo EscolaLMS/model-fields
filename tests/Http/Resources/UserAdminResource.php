@@ -16,12 +16,12 @@ class UserAdminResource extends JsonResource
 
     public function toArray($request)
     {
-        return [
+        return array_merge([
             'id' => $this->user->id,
             'first_name' => $this->user->first_name,
             'last_name'  => $this->user->last_name,
             'email' => $this->user->email,
-            ...ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::ADMIN)
-        ];
+
+        ], ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::ADMIN));
     }
 }

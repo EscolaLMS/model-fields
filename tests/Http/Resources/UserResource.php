@@ -16,11 +16,10 @@ class UserResource extends JsonResource
 
     public function toArray($request)
     {
-        return [
+        return array_merge([
             'first_name' => $this->user->first_name,
             'last_name'  => $this->user->last_name,
             'email' => $this->user->email,
-            ...ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::PUBLIC)
-        ];
+        ], ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::PUBLIC));
     }
 }

@@ -197,7 +197,9 @@ class UserResource extends JsonResource
 
 ```
 
-Note the visibility field in example above. Package allows to define visibility of the meta fields. Here we're defining 2 fields, one is public, second admin only
+Note. In php 7.4 user `array_merge` instead of spread `...` operator.
+
+Look at the visibility field in example above. Package allows to define visibility of the meta fields. Here we're defining 2 fields, one is public, second admin only.
 
 ```php
 
