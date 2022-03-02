@@ -24,11 +24,10 @@ class UserCreateRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        return array_merge([
             'first_name' => ['required', 'string'],
             'last_name' => ['required', 'string'],
             'email' => ['required', 'unique:users'],
-            ...ModelFields::getFieldsMetadataRules(User::class)
-        ];
+        ], ModelFields::getFieldsMetadataRules(User::class));
     }
 }

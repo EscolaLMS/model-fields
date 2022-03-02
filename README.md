@@ -313,16 +313,17 @@ class UserCreateRequest extends FormRequest
      */
     public function rules()
     {
-        return array_merge([
+        return [
             'first_name' => ['required', 'string'],
             'last_name' => ['required', 'string'],
             'email' => ['required', 'unique:users'],
-        ],
-            ModelFields::getFieldsMetadataRules(User::class)
-        );
+            ...ModelFields::getFieldsMetadataRules(User::class)
+        ];
     }
 }
 ```
+
+In php 7.4 user `array_merge` instead of spread `...` operator.
 
 TODO
 
