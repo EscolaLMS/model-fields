@@ -2,13 +2,9 @@
 
 namespace EscolaLms\ModelFields\Tests\API;
 
-use BadMethodCallException;
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\ModelFields\Tests\TestCase;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
-
-use Exception;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\ModelFields\Tests\Models\User;
 use Illuminate\Support\Facades\App;
@@ -118,69 +114,4 @@ class ModelFieldsApiTest extends TestCase
 
         $this->assertEquals(collect($result->getData()->data)->contains(fn ($item) => $item->name === 'description'), false);
     }
-
-    /*
-    public function testMe()
-    {
-
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode(["id" => 123, "name" => "name"])));
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode([["id" => 123, "name" => "name"]])));
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode([["id" => 123, "name" => "name"]])));
-
-        $result = $this->actingAs($this->user, 'api')->getJson('/api/mattermost/me');
-
-        $result->assertOk();
-
-        $json =  [
-            "server" => "localhost",
-            "teams" => [
-                [
-                    "id" => 123,
-                    "name" => "name",
-                    "channels" => [[
-                        "id" => 123,
-                        "name" => "name",
-                        "url" => "https://localhost/name/name"
-                    ]]
-                ]
-            ]
-
-        ];
-
-        $result->assertJsonFragment($json);
-    }
-
-    public function testGenerateCredentials()
-    {
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode(["id" => 123, "name" => "name"])));
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode(["status" => "ok"])));
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode([["id" => 123, "name" => "name"]])));
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode([["id" => 123, "name" => "name"]])));
-
-        $result = $this->actingAs($this->user, 'api')->getJson('/api/mattermost/generate_credentials');
-
-        $result->assertJsonStructure([
-            'success',
-            'message',
-            'data' => [
-                'status' => ['status'],
-                'user' => ['id'],
-                'password'
-            ],
-
-        ]);
-
-        $result->assertOk();
-    }
-
-    public function testResetPassword()
-    {
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode(["id" => 123, "name" => "name"])));
-        $this->mock->append(new Response(200, ['Token' => 'Token'], json_encode(["status" => "ok"])));
-
-        $result = $this->actingAs($this->user, 'api')->getJson('/api/mattermost/reset_password');
-
-        $result->assertOk();
-    }
-    */
 }

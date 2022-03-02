@@ -44,6 +44,11 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  *          type="object"
  *      ),
  *      @OA\Property(
+ *          property="visibility",
+ *          description="visibility",
+ *          type="object"
+ *      ),
+ *      @OA\Property(
  *          property="class_type",
  *          description="class_type",
  *          type="string"
@@ -65,6 +70,8 @@ class Metadata extends Model
         'type' => 'string',
         'default' => 'string',
         'rules' => 'array',
+        'extra' => 'array',
+        'visibility' => 'integer',
         'class_type' => 'string',
     ];
 
