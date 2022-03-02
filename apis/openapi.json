@@ -1,0 +1,202 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "EscolaLMS",
+        "version": "0.0.1"
+    },
+    "paths": {
+        "/api/model-fields": {
+            "get": {
+                "tags": [
+                    "Model Fields"
+                ],
+                "summary": "Lists available Model extended fields",
+                "operationId": "e9d1e7ecef147b0c5aa8a2f80a285d4b",
+                "parameters": [
+                    {
+                        "name": "class_type",
+                        "in": "query",
+                        "description": "class type of which field is extended",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of available fields",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "map of templates identified by a slug value",
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "$ref": "#/components/schemas/ModelField"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "endpoint requires authentication"
+                    },
+                    "403": {
+                        "description": "user doesn't have required access rights"
+                    },
+                    "500": {
+                        "description": "server-side error"
+                    }
+                }
+            }
+        },
+        "/api/admin/model-fields": {
+            "post": {
+                "tags": [
+                    "Admin Model Fields"
+                ],
+                "summary": "Create or update metafile",
+                "operationId": "6211e456cb452c2381b0c50c0584b514",
+                "requestBody": {
+                    "description": "Metadata attributes",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Metadata"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Metadata created successfully"
+                    },
+                    "401": {
+                        "description": "endpoint requires authentication"
+                    },
+                    "403": {
+                        "description": "user doesn't have required access rights"
+                    },
+                    "422": {
+                        "description": "one of the parameters has invalid format"
+                    },
+                    "500": {
+                        "description": "server-side error"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Model Fields"
+                ],
+                "summary": "delete metafile and related values from model",
+                "operationId": "6c2d09dbdf590976fedd7055284f2517",
+                "requestBody": {
+                    "description": "Metadata attributes",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Metadata"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Metadata created successfully"
+                    },
+                    "401": {
+                        "description": "endpoint requires authentication"
+                    },
+                    "403": {
+                        "description": "user doesn't have required access rights"
+                    },
+                    "422": {
+                        "description": "one of the parameters has invalid format"
+                    },
+                    "500": {
+                        "description": "server-side error"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ModelField": {
+                "properties": {
+                    "id": {
+                        "description": "template id",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "template name",
+                        "type": "string"
+                    },
+                    "value": {
+                        "description": "",
+                        "type": "string"
+                    },
+                    "class_type": {
+                        "description": "",
+                        "type": "string"
+                    },
+                    "class_id": {
+                        "description": "",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Metadata": {
+                "properties": {
+                    "id": {
+                        "description": "id",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "name",
+                        "type": "string"
+                    },
+                    "value": {
+                        "description": "value",
+                        "type": "string"
+                    },
+                    "default": {
+                        "description": "default",
+                        "type": "string"
+                    },
+                    "rules": {
+                        "description": "rules",
+                        "type": "object"
+                    },
+                    "extra": {
+                        "description": "extra",
+                        "type": "object"
+                    },
+                    "class_type": {
+                        "description": "class_type",
+                        "type": "string"
+                    },
+                    "class_id": {
+                        "description": "class_id",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}
