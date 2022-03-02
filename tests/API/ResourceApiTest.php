@@ -52,7 +52,7 @@ class ResourceApiTest extends TestCase
         );
     }
 
-    public function testList()
+    public function testListResourceVisibility()
     {
 
         User::create([
@@ -70,5 +70,10 @@ class ResourceApiTest extends TestCase
         $result = $this->getJson('/api/admin/test-users');
 
         $this->assertTrue(collect($result->getData())->contains(fn ($item) => isset($item->admin_secret) && $item->admin_secret === 'XXX'));
+    }
+
+    public function testCreateRules()
+    {
+        $this->assertTrue(true);
     }
 }

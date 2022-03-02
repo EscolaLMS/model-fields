@@ -294,15 +294,14 @@ class UserAdminResource extends JsonResource
 - more tests for different update/save methods √
 - sync in FIXME √
 - filling one field might delete √
-
 - deleting model cascade with fields √
 - delete meta fields with model fields √
 - delete endpoint √
-
-- fasade
-- helper for endpoint resources
-- visibility
-- visibility bitmask
+- fasade √
+- helper for endpoint resources √
+- visibility √
+- visibility bitmask √ś
+- validation
 - trait
 
 ```
