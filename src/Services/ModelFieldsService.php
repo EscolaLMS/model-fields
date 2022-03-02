@@ -58,6 +58,13 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return Cache::tags([$tag])->get($key);
     }
 
+    public function getFieldsMetadataRules(string $class_type): array
+    {
+        return $this->getFieldsMetadata($class_type)
+            ->mapWithKeys(fn ($item, $key) => [$item['name'] => $item['rules']])
+            ->toArray();
+    }
+
     public function castField($value, Metadata $field)
     {
         $type = $field['type'];

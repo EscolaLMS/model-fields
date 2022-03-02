@@ -9,12 +9,12 @@ use EscolaLms\ModelFields\Tests\Http\Resources\UserResource;
 use EscolaLms\ModelFields\Tests\Http\Resources\UserAdminResource;
 
 use EscolaLms\ModelFields\Tests\Models\User;
-
+use EscolaLms\ModelFields\Tests\Http\Requests\UserCreateRequest;
 
 class TestsModelFieldsApiController extends Controller
 {
 
-    public function create(Request $request): JsonResponse
+    public function create(UserCreateRequest $request): JsonResponse
     {
         $input = $request->all();
         $result = User::create($input);

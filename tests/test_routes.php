@@ -10,4 +10,5 @@ Route::group(['prefix' => 'api/test-users'], function () {
 
 Route::group(['prefix' => 'api/admin/test-users'], function () {
     Route::get('/', [TestsModelFieldsApiController::class, 'adminList']);
+    Route::post('/', [TestsModelFieldsApiController::class, 'create']);
 });

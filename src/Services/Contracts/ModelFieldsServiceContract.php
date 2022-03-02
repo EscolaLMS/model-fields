@@ -18,4 +18,6 @@ interface ModelFieldsServiceContract
     public function castField($value, Metadata $field);
 
     public function getExtraAttributesValues(Model $model, $visibility = null): array;
+
+    public function getFieldsMetadataRules(string $class_type): array;
 }

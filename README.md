@@ -284,26 +284,45 @@ class UserAdminResource extends JsonResource
 
 ```
 
-- enum for types √
-- default value √
-- caching metadata √
-- caching values √
-- validation √
-- json value √
-- describe √
-- more tests for different update/save methods √
-- sync in FIXME √
-- filling one field might delete √
-- deleting model cascade with fields √
-- delete meta fields with model fields √
-- delete endpoint √
-- fasade √
-- helper for endpoint resources √
-- visibility √
-- visibility bitmask √ś
-- validation
+### Validation with `FormRequest`
+
+Example below describes how to fetch validation rules from MetaField
+
+```php
+namespace EscolaLms\ModelFields\Tests\Http\Requests;
+
+use EscolaLms\ModelFields\Tests\Models\User;
+
+use Illuminate\Foundation\Http\FormRequest;
+use EscolaLms\ModelFields\Facades\ModelFields;
+
+class UserCreateRequest extends FormRequest
+{
+    /**
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'first_name' => ['required', 'string'],
+            'last_name' => ['required', 'string'],
+            'email' => ['required', 'unique:users'],
+            ...ModelFields::getFieldsMetadataRules(User::class)
+        ];
+    }
+}
+```
+
+TODO
+
 - trait
-
-```
-
-```

@@ -50,10 +50,6 @@ class ResourceApiTest extends TestCase
             ['required', 'string', 'max:255'],
             MetaFieldVisibilityEnum::ADMIN
         );
-    }
-
-    public function testListResourceVisibility()
-    {
 
         User::create([
             'first_name' => 'aaa',
@@ -62,6 +58,36 @@ class ResourceApiTest extends TestCase
             'description' => 'aaa',
             'admin_secret' => 'XXX'
         ]);
+
+        User::create([
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'email' => 'aaa1@email.com',
+            'description' => 'aaa',
+            'admin_secret' => 'XXX'
+        ]);
+
+        User::create([
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'email' => 'aaa2@email.com',
+            'description' => 'aaa',
+            'admin_secret' => 'XXX'
+        ]);
+
+        User::create([
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'email' => 'aaa3@email.com',
+            'description' => 'aaa',
+            'admin_secret' => 'XXX'
+        ]);
+    }
+
+    public function testListResourceVisibility()
+    {
+
+
 
         $result = $this->getJson('/api/test-users');
 
@@ -74,6 +100,26 @@ class ResourceApiTest extends TestCase
 
     public function testCreateRules()
     {
-        $this->assertTrue(true);
+
+        $result = $this->postJson('/api/admin/test-users', [
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'email' => 'aaa666@email.com',
+            'description' => 'aaa',
+            'admin_secret' => 'XXX'
+        ]);
+
+        $result->assertStatus(422);  // "The title field is required."
+
+        $result = $this->postJson('/api/admin/test-users', [
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'title' => 'Dr.',
+            'email' => 'aaa666@email.com',
+            'description' => 'aaa',
+            'admin_secret' => 'XXX'
+        ]);
+
+        $result->assertOK();
     }
 }
