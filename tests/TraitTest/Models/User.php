@@ -1,6 +1,6 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\Trait\Models;
+namespace EscolaLms\ModelFields\Tests\TraitTest\Models;
 
 use Illuminate\Database\Eloquent\Model;
 // use EscolaLms\ModelFields\Models\Model;

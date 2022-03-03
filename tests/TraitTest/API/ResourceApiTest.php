@@ -1,6 +1,6 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\Trait\API;
+namespace EscolaLms\ModelFields\Tests\TraitTest\API;
 
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\ModelFields\Tests\TestCase;
@@ -8,7 +8,7 @@ use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
 
 use EscolaLms\Core\Enums\UserRole;
-use EscolaLms\ModelFields\Tests\Trait\Models\User;
+use EscolaLms\ModelFields\Tests\TraitTest\Models\User;
 use Illuminate\Support\Facades\App;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 

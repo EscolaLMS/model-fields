@@ -1,8 +1,8 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\Trait\Http\Requests;
+namespace EscolaLms\ModelFields\Tests\TraitTest\Http\Requests;
 
-use EscolaLms\ModelFields\Tests\Trait\Models\User;
+use EscolaLms\ModelFields\Tests\TraitTest\Models\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use EscolaLms\ModelFields\Facades\ModelFields;

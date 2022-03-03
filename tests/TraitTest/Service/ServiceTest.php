@@ -1,10 +1,10 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\Trait\Service;
+namespace EscolaLms\ModelFields\Tests\TraitTest\Service;
 
 use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Tests\TestCase;
-use EscolaLms\ModelFields\Tests\Trait\Models\User;
+use EscolaLms\ModelFields\Tests\TraitTest\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;

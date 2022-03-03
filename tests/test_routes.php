@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use EscolaLms\ModelFields\Http\Controllers\ModelFieldsApiController;
 use EscolaLms\ModelFields\Tests\Http\Controllers\TestsModelFieldsApiController;
-use EscolaLms\ModelFields\Tests\Trait\Http\Controllers\TestsModelFieldsApiController as TestsTraitModelFieldsApiController;
+use EscolaLms\ModelFields\Tests\TraitTest\Http\Controllers\TestsModelFieldsApiController as TestsTraitModelFieldsApiController;
 
 Route::group(['prefix' => 'api/trait/test-users'], function () {
     Route::get('/', [TestsTraitModelFieldsApiController::class, 'list']);
