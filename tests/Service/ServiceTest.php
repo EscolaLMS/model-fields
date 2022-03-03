@@ -12,6 +12,7 @@ use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
+use Faker\Generator as Faker;
 
 
 class ServiceTest extends TestCase
@@ -25,6 +26,7 @@ class ServiceTest extends TestCase
         parent::setUp();
 
         $this->service = App::make(ModelFieldsServiceContract::class);
+        $this->faker = App::make(Faker::class);
 
         $this->service->addOrUpdateMetadataField(
             User::class,
@@ -93,7 +95,7 @@ class ServiceTest extends TestCase
         $user = User::create(array_merge([
             'first_name' => 'aaa',
             'last_name' => 'aaa',
-            'email' => 'aaa@email.com',
+            'email' => $this->faker->unique()->safeEmail,
         ], $extraAttributes));
 
         $user = User::find($user->id);
@@ -124,7 +126,7 @@ class ServiceTest extends TestCase
         $user = User::create(array_merge([
             'first_name' => 'aaa',
             'last_name' => 'aaa',
-            'email' => 'aaa@email.com',
+            'email' => $this->faker->unique()->safeEmail,
         ], $extraAttributes));
 
         $user = User::find($user->id);
@@ -158,7 +160,7 @@ class ServiceTest extends TestCase
         $user = User::create(array_merge([
             'first_name' => 'aaa',
             'last_name' => 'aaa',
-            'email' => 'aaa@email.com',
+            'email' => $this->faker->unique()->safeEmail,
         ], $extraAttributes));
 
         $user->fill(['a' => 'nb']);
@@ -209,7 +211,7 @@ class ServiceTest extends TestCase
         $user = User::with(['fields'])->create(array_merge([
             'first_name' => 'aaa',
             'last_name' => 'aaa',
-            'email' => 'aaa@email.com',
+            'email' => $this->faker->unique()->safeEmail,
         ]));
 
         $user = User::find($user->id);

@@ -6,8 +6,6 @@ use Illuminate\Support\ServiceProvider;
 
 class TestModelFieldsServiceProvider extends ServiceProvider
 {
-
-
     /**
      * Bootstrap any application services.
      *

@@ -34,6 +34,30 @@ The package allows to add additional fields by creating special meta description
 
 Next to metadata descriptions there are values that works with the meta description.
 
+Below are examples of how matadata and values are stores in database
+
+`model_fields_metadata` table sample rows
+
+|  id  |     created_at      |     updated_at      |        name         |  type   |              rules              | extra |   default   |               class_type                | visibility |
+| :--: | :-----------------: | :-----------------: | :-----------------: | :-----: | :-----------------------------: | :---: | :---------: | :-------------------------------------: | :--------: |
+| 2147 | 2022-03-03 12:10:05 | 2022-03-03 12:10:05 |     description     |  text   | ["required","string","max:255"] | NULL  | lorem ipsum | EscolaLms\ModelFields\Tests\Models\User |     1      |
+| 2148 | 2022-03-03 12:10:05 | 2022-03-03 12:10:05 | interested_in_tests | boolean |     ["required","boolean"]      | NULL  |      1      | EscolaLms\ModelFields\Tests\Models\User |     1      |
+| 2149 | 2022-03-03 12:10:05 | 2022-03-03 12:10:05 |        title        | varchar | ["required","string","max:255"] | NULL  |             | EscolaLms\ModelFields\Tests\Models\User |     1      |
+| 2150 | 2022-03-03 12:10:05 | 2022-03-03 12:10:05 |      consents       |  json   |       ["required","json"]       | NULL  |     []      | EscolaLms\ModelFields\Tests\Models\User |     1      |
+| 2151 | 2022-03-03 12:10:05 | 2022-03-03 12:10:05 |    extra_points     | number  |     ["required","integer"]      | NULL  |     123     | EscolaLms\ModelFields\Tests\Models\User |     1      |
+| 2153 | 2022-03-03 12:11:05 | 2022-03-03 12:11:05 |  extra_description  |  text   | ["required","string","max:255"] | NULL  | lorem ipsum | EscolaLms\ModelFields\Tests\Models\User |     1      |
+
+`model_fields_values` table sample rows
+
+|  id  |     created_at      |     updated_at      |        name         |               value                |               class_type                | class_id |
+| :--: | :-----------------: | :-----------------: | :-----------------: | :--------------------------------: | :-------------------------------------: | :------: |
+| 1432 | 2022-03-03 12:17:42 | 2022-03-03 12:17:42 |      consents       | {"consent1":true,"consent2":false} | EscolaLms\ModelFields\Tests\Models\User |   1458   |
+| 1433 | 2022-03-03 12:17:42 | 2022-03-03 12:17:42 |    extra_points     |                1000                | EscolaLms\ModelFields\Tests\Models\User |   1458   |
+| 1436 | 2022-03-03 12:17:42 | 2022-03-03 12:17:42 |     description     |                zzz                 | EscolaLms\ModelFields\Tests\Models\User |   1458   |
+| 1438 | 2022-03-03 12:17:42 | 2022-03-03 12:17:42 | interested_in_tests |                true                | EscolaLms\ModelFields\Tests\Models\User |   1458   |
+
+See [tests](tests) folder as rows above are generated from the tests.
+
 ## Example
 
 The best documentation operates on live example so here it is.
@@ -370,3 +394,7 @@ In php 7.4 user `array_merge` instead of spread `...` operator.
 ## Tests
 
 Run `./vendor/bin/phpunit` to run tests. See [tests](tests) folder as it's quite good staring point as documentation appendix.
+
+## Roadmap. Todo
+
+- `firstOrCreate` doesn't work when passing extra attributes
