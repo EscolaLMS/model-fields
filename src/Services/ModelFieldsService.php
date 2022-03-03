@@ -5,7 +5,8 @@ namespace EscolaLms\ModelFields\Services;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Models\Metadata;
-use EscolaLms\ModelFields\Models\Model;
+//use EscolaLms\ModelFields\Models\Model;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
@@ -82,9 +83,16 @@ class ModelFieldsService implements ModelFieldsServiceContract
         }
     }
 
+    private function checkVisibility(int $visibility = null, int $metadataFieldVisibility): bool
+    {
+        return  is_int($visibility) ? $visibility &  $metadataFieldVisibility : true;
+    }
+
     public function getExtraAttributesValues(Model $model, $visibility = null): array
     {
         $fieldsCol = self::getFieldsMetadata(get_class($model));
+
+
 
         $fields = $fieldsCol
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
@@ -95,13 +103,15 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
         $defaults = $fieldsCol
             ->filter(fn ($value, $key) => !empty($value['default']))
-            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
+            //->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
+            ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
             ->toArray();
 
         $extraAttributes = $model->fields()
             ->get()
-            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
+            //            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
+            ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
             ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
             ->toArray();
 

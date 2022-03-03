@@ -5,8 +5,6 @@ use EscolaLms\ModelFields\Http\Controllers\ModelFieldsApiController;
 
 Route::group(['prefix' => 'api/model-fields'], function () {
     Route::get('/', [ModelFieldsApiController::class, 'list']);
-    // Route::get('/reset_password', [MattermostController::class, 'resetPassword']);
-    // Route::get('/generate_credentials', [MattermostController::class, 'generateCredentials']);
 });
 
 Route::group(['prefix' => 'api/admin/model-fields', 'middleware' => ['auth:api']], function () {

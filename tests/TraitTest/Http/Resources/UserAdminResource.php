@@ -1,9 +1,9 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\Http\Resources;
+namespace EscolaLms\ModelFields\Tests\TraitTest\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use EscolaLms\ModelFields\Tests\Models\User;
+use EscolaLms\ModelFields\Tests\TraitTest\Models\User;
 use EscolaLms\ModelFields\Facades\ModelFields;
 use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
 

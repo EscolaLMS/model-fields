@@ -36,6 +36,8 @@ Next to metadata descriptions there are values that works with the meta descript
 
 ## Example
 
+The best documentation operates on live example so here it is.
+
 Assuming you have User Model
 
 ```php
@@ -56,7 +58,10 @@ class User extends Model
 
 In order to add extra fields to user model you would need to create new columns in user table with migration and add those fields.
 This is a standard way of handling this issue, but this package introduces new one.
-First step is to replace `Illuminate\Database\Eloquent\Model` with `EscolaLms\ModelFields\Models\Model`
+
+### Option 1. Extending Model
+
+This option replaces `Illuminate\Database\Eloquent\Model` with `EscolaLms\ModelFields\Models\Model`
 
 ```php
 use EscolaLms\ModelFields\Models\Model;
@@ -73,7 +78,33 @@ class User extends Model
 }
 ```
 
+### Option 2. Trait in Model.
+
+This option uses `EscolaLms\ModelFields\Traits\ModelFields` instead of extending class;
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use EscolaLms\ModelFields\Traits\ModelFields;
+
+class User extends Model
+{
+    use ModelFields;
+
+    protected $table = 'users';
+    protected $fillable = ['first_name', 'last_name', 'email'];
+    protected $appends = ['foo'];
+    public function getFooAttribute()
+    {
+        return 'bar';
+    }
+}
+
+}
+```
+
 Basically that all the steps you need to allow model to be extendable.
+
+### Defining new fields on selected Model.
 
 Now lets create new field meta description. We'll be adding new field to user, called `description` which will be long text.
 
@@ -279,11 +310,20 @@ class UserAdminResource extends JsonResource
             'first_name' => $this->user->first_name,
             'last_name'  => $this->user->last_name,
             'email' => $this->user->email,
-            ...ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::ADMIN)
+            ...ModelFields::getExtraAttributesValues($this->user, MetaFieldVisibilityEnum::ADMIN | MetaFieldVisibilityEnum::PUBLIC)
         ];
     }
 }
 
+```
+
+`MetaFieldVisibilityEnum::ADMIN | MetaFieldVisibilityEnum::PUBLIC` is a [Flagged/Bitwise Enum](https://github.com/BenSampo/laravel-enum#flaggedbitwise-enum). `MetaFieldVisibilityEnum` is just a proposal - you can use as many permissions as you like yet defining values you must use powers of 2, like.
+
+```php
+    const ReadComments      = 1 << 0;
+    const WriteComments     = 1 << 1;
+    const EditComments      = 1 << 2;
+    const DeleteComments    = 1 << 3;
 ```
 
 ### Validation with `FormRequest`
@@ -327,6 +367,6 @@ class UserCreateRequest extends FormRequest
 
 In php 7.4 user `array_merge` instead of spread `...` operator.
 
-TODO
+## Tests
 
-- trait
+Run `./vendor/bin/phpunit` to run tests. See [tests](tests) folder as it's quite good staring point as documentation appendix.
