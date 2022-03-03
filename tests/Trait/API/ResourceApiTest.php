@@ -1,6 +1,6 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\API;
+namespace EscolaLms\ModelFields\Tests\Trait\API;
 
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\ModelFields\Tests\TestCase;
@@ -8,7 +8,7 @@ use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
 
 use EscolaLms\Core\Enums\UserRole;
-use EscolaLms\ModelFields\Tests\Models\User;
+use EscolaLms\ModelFields\Tests\Trait\Models\User;
 use Illuminate\Support\Facades\App;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 
@@ -88,11 +88,11 @@ class ResourceApiTest extends TestCase
     public function testListResourceVisibility()
     {
 
-        $result = $this->getJson('/api/test-users');
+        $result = $this->getJson('/api/trait/test-users');
 
         $this->assertTrue(!collect($result->getData())->contains(fn ($item) => isset($item->admin_secret) && $item->admin_secret === 'XXX'));
 
-        $result = $this->getJson('/api/admin/test-users');
+        $result = $this->getJson('/api/admin/trait/test-users');
 
         $this->assertTrue(collect($result->getData())->contains(fn ($item) => isset($item->admin_secret) && $item->admin_secret === 'XXX'));
     }
@@ -100,7 +100,7 @@ class ResourceApiTest extends TestCase
     public function testCreateRules()
     {
 
-        $result = $this->postJson('/api/admin/test-users', [
+        $result = $this->postJson('/api/admin/trait/test-users', [
             'first_name' => 'aaa',
             'last_name' => 'aaa',
             'email' => 'aaa666@email.com',
@@ -110,7 +110,7 @@ class ResourceApiTest extends TestCase
 
         $result->assertStatus(422);  // "The title field is required."
 
-        $result = $this->postJson('/api/admin/test-users', [
+        $result = $this->postJson('/api/admin/trait/test-users', [
             'first_name' => 'aaa',
             'last_name' => 'aaa',
             'title' => 'Dr.',

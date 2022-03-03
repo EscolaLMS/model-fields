@@ -1,13 +1,15 @@
 <?php
 
-namespace EscolaLms\ModelFields\Tests\Models;
+namespace EscolaLms\ModelFields\Tests\Trait\Models;
 
-//use Illuminate\Database\Eloquent\Model;
-use EscolaLms\ModelFields\Models\Model;
-//use EscolaLms\ModelFields\Traits\ModelFields;
+use Illuminate\Database\Eloquent\Model;
+// use EscolaLms\ModelFields\Models\Model;
+use EscolaLms\ModelFields\Traits\ModelFields;
 
 class User extends Model
 {
+
+    use ModelFields;
 
     protected $table = 'users';
 
