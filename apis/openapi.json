@@ -19,7 +19,7 @@
                         "description": "class type of which field is extended",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
