@@ -3,15 +3,13 @@
 namespace EscolaLms\ModelFields\Http\Controllers;
 
 use EscolaLms\Core\Http\Controllers\EscolaLmsBaseController;
-use EscolaLms\Templates\Services\Contracts\TemplateVariablesServiceContract;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Http\Controllers\Contracts\ModelFieldsApiContract;
 use EscolaLms\ModelFields\Http\Resources\MetadataResource;
-use Illuminate\Http\Request;
 use EscolaLms\ModelFields\Http\Requests\MetadataCreateOrUpdateRequest;
 use EscolaLms\ModelFields\Http\Requests\MetadataDeleteRequest;
+use EscolaLms\ModelFields\Http\Requests\MetadataListRequest;
 
 class ModelFieldsApiController extends EscolaLmsBaseController implements ModelFieldsApiContract
 {
@@ -22,7 +20,7 @@ class ModelFieldsApiController extends EscolaLmsBaseController implements ModelF
         $this->service = $service;
     }
 
-    public function list(Request $request): JsonResponse
+    public function list(MetadataListRequest $request): JsonResponse
     {
         $classType = $request->get('class_type');
         if (empty($classType)) {

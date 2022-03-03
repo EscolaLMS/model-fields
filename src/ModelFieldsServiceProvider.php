@@ -12,8 +12,6 @@ use EscolaLms\ModelFields\Services\ModelFieldsService;
 
 class ModelFieldsServiceProvider extends ServiceProvider
 {
-
-
     public $singletons = [
         ModelFieldsServiceContract::class => ModelFieldsService::class,
     ];
@@ -28,7 +26,6 @@ class ModelFieldsServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
     }
-
 
     public function register()
     {

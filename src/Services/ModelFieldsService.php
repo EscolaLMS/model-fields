@@ -2,10 +2,8 @@
 
 namespace EscolaLms\ModelFields\Services;
 
-use Illuminate\Database\Eloquent\Model as BaseModel;
 use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Models\Metadata;
-//use EscolaLms\ModelFields\Models\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;

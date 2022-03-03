@@ -57,6 +57,14 @@ class ServiceTest extends TestCase
             '[]',
             ['required', 'json']
         );
+
+        $this->service->addOrUpdateMetadataField(
+            User::class,
+            'extra_points',
+            MetaFieldTypeEnum::NUMBER,
+            123,
+            ['required', 'integer']
+        );
     }
 
 
@@ -79,7 +87,7 @@ class ServiceTest extends TestCase
         $extraAttributes = [
             'description' => 'aaa',
             'interested_in_tests' => false,
-            'aaaa' => 'aaaa'
+            'aaaa' => 'aaaa',
         ];
 
         $user = User::create(array_merge([
@@ -142,7 +150,8 @@ class ServiceTest extends TestCase
             'description' => 'aaa',
             'interested_in_tests' => false,
             'aaaa' => 'aaaa',
-            'consents' => ['consent1' => true, 'consent2' => false]
+            'consents' => ['consent1' => true, 'consent2' => false],
+            'extra_points' => 1000
         ];
 
 
@@ -160,6 +169,7 @@ class ServiceTest extends TestCase
         $this->assertEquals($user->interested_in_tests, $extraAttributes['interested_in_tests']);
 
         $this->assertEquals($user->consents, $extraAttributes['consents']);
+        $this->assertEquals($user->extra_points, $extraAttributes['extra_points']);
 
         $this->assertNull($user->aaaa);
 

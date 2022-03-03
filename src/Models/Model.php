@@ -4,11 +4,8 @@ namespace EscolaLms\ModelFields\Models;
 
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use EscolaLms\ModelFields\Models\Field;
-use EscolaLms\ModelFields\Models\Metadata;
 use Illuminate\Support\Collection;
-
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
-use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 
