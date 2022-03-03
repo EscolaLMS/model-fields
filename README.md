@@ -34,7 +34,7 @@ The package allows to add additional fields by creating special meta description
 
 Next to metadata descriptions there are values that works with the meta description.
 
-Below are examples of how matadata and values are stores in database
+Below are examples of how matadata and values are stored in database
 
 `model_fields_metadata` table sample rows
 
@@ -134,9 +134,9 @@ Now lets create new field meta description. We'll be adding new field to user, c
 
 ```php
 
-use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
+use EscolaLms\ModelFields\Facades\ModelFields;
 
-$this->service->addOrUpdateMetadataField(
+ModelFields::addOrUpdateMetadataField(
     User::class, // Model class that we want to extents
     'description', // name of new field
     'text', // type of new field
