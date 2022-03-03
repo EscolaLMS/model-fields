@@ -3,11 +3,9 @@
 namespace EscolaLms\ModelFields\Http\Controllers\Contracts;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 use EscolaLms\ModelFields\Http\Requests\MetadataCreateOrUpdateRequest;
 use EscolaLms\ModelFields\Http\Requests\MetadataDeleteRequest;
+use EscolaLms\ModelFields\Http\Requests\MetadataListRequest;
 
 
 interface ModelFieldsApiContract
@@ -23,7 +21,7 @@ interface ModelFieldsApiContract
      *         name="class_type",
      *         required=true,
      *         @OA\Schema(
-     *             type="integer"
+     *             type="string"
      *         )
      *     ),
      *     @OA\Response(
@@ -57,7 +55,7 @@ interface ModelFieldsApiContract
      * @param TemplateListingRequest $request
      * @return JsonResponse
      */
-    public function list(Request $request): JsonResponse;
+    public function list(MetadataListRequest $request): JsonResponse;
 
     /**
      * @OA\Post(

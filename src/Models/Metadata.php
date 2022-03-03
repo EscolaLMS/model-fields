@@ -2,13 +2,7 @@
 
 namespace EscolaLms\ModelFields\Models;
 
-use EscolaLms\Core\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use EscolaLms\Templates\Database\Factories\TemplateFactory;
-use EscolaLms\Templates\Services\Contracts\TemplateServiceContract;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @OA\Schema(
