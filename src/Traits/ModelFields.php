@@ -56,7 +56,7 @@ trait ModelFields
 
     public function save(array $options = [])
     {
-        $extraFields = $this->extraFields;
+        $extraFields = $this->extraFields ?? collect();
         unset($this->extraFields);
         $savedState = parent::save($options);
         $values = $extraFields->toArray();
@@ -100,10 +100,10 @@ trait ModelFields
         return parent::setAttribute($key, $value);
     }
 
-    public function delete()
+    public function delete(): ?bool
     {
         $this->fields()->delete();
-        parent::delete();
+        return parent::delete();
     }
 
     public function fields()

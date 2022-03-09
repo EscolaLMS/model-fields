@@ -51,7 +51,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
         $key = sprintf("modelfields.meta.%s", $class_type);
         $tag = sprintf("modelfields.%s", $class_type);
         if (!Cache::has($key)) {
-            $fields = Metadata::where('class_type', $class_type)->get();
+            $fields = Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
             Cache::tags([$tag])->put($key, $fields);
         }
         return Cache::tags([$tag])->get($key);
@@ -69,7 +69,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
         $type = $field['type'];
         switch ($type) {
             case MetaFieldTypeEnum::BOOLEAN:
-                return (bool) intval($value);
+                return (bool) $value;
             case MetaFieldTypeEnum::NUMBER:
                 return (float) ($value);
             case MetaFieldTypeEnum::JSON:
