@@ -188,9 +188,7 @@ class ServiceTest extends TestCase
         ]);
 
         $this->assertEquals($user->description, 'zzz');
-        $this->assertEquals($user->interested_in_tests, false);
-
-        // 
+        $this->assertEquals($user->interested_in_tests, true);
     }
 
     public function testDefaultFieldsModel()
