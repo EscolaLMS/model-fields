@@ -20,7 +20,7 @@ class CreateModelFieldsMetadataTable extends Migration
             $table->enum('type', ['boolean', 'number', 'varchar', 'text', 'json'])->default('varchar'); // this must be compatible with EscolaLms\ModelFields\Enum\MetaFieldTypeEnum::getValues()
             $table->json('rules')->nullable();
             $table->json('extra')->nullable();
-            $table->text('default')->nullable()->index();
+            $table->text('default')->nullable();
             $table->string('class_type', 255)->index();
             $table->integer('visibility')->default(1 << 0);
         });
