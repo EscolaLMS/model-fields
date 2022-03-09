@@ -53,7 +53,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
         // if (!Cache::has($key)) {
             $fields = Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
             // Cache::tags([$tag])->put($key, $fields);
-        }
+        // }
         // return Cache::tags([$tag])->get($key);
         return $fields;
     }
