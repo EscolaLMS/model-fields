@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Cache;
+// use Illuminate\Support\Facades\Cache;
 
 
 class ModelFieldsService implements ModelFieldsServiceContract
@@ -28,7 +28,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
             ['type' => $type, 'default' => $default, 'rules' => $rules, 'visibility' => $visibility]
         );
 
-        Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
+        // Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
     }
 
     public function removeMetaField(string $class_type, string $name): bool
@@ -41,7 +41,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
             ['class_type' => $class_type, 'name' => $name]
         )->delete();
 
-        Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
+        // Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
 
         return $bool;
     }
@@ -50,11 +50,12 @@ class ModelFieldsService implements ModelFieldsServiceContract
     {
         $key = sprintf("modelfields.meta.%s", $class_type);
         $tag = sprintf("modelfields.%s", $class_type);
-        if (!Cache::has($key)) {
+        // if (!Cache::has($key)) {
             $fields = Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
-            Cache::tags([$tag])->put($key, $fields);
-        }
-        return Cache::tags([$tag])->get($key);
+            // Cache::tags([$tag])->put($key, $fields);
+        // }
+        // return Cache::tags([$tag])->get($key);
+        return $fields;
     }
 
     public function getFieldsMetadataRules(string $class_type): array
