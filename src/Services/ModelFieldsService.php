@@ -48,21 +48,28 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public function getFieldsMetadata(string $class_type): Collection
     {
-        $key = sprintf("modelfields.meta.%s", $class_type);
-        $tag = sprintf("modelfields.%s", $class_type);
-        // if (!Cache::has($key)) {
+        if (config('model-fields.enabled')) {
+            $key = sprintf("modelfields.meta.%s", $class_type);
+            $tag = sprintf("modelfields.%s", $class_type);
+            // if (!Cache::has($key)) {
             $fields = Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
             // Cache::tags([$tag])->put($key, $fields);
-        // }
-        // return Cache::tags([$tag])->get($key);
-        return $fields;
+            // }
+            // return Cache::tags([$tag])->get($key);
+            return $fields;
+        }
+
+        return collect([]);
     }
 
     public function getFieldsMetadataRules(string $class_type): array
     {
-        return $this->getFieldsMetadata($class_type)
-            ->mapWithKeys(fn ($item, $key) => [$item['name'] => $item['rules']])
-            ->toArray();
+        if (config('model-fields.enabled')) {
+            return $this->getFieldsMetadata($class_type)
+                ->mapWithKeys(fn ($item, $key) => [$item['name'] => $item['rules']])
+                ->toArray();
+        }
+        return [];
     }
 
     public function castField($value, Metadata $field)
@@ -89,31 +96,36 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public function getExtraAttributesValues(Model $model, $visibility = null): array
     {
-        $fieldsCol = self::getFieldsMetadata(get_class($model));
+        if (config('model-fields.enabled')) {
+
+            $fieldsCol = self::getFieldsMetadata(get_class($model));
 
 
 
-        $fields = $fieldsCol
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
+            $fields = $fieldsCol
+                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
 
-        $visibilities = $fieldsCol
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item['visibility']])
-            ->toArray();
+            $visibilities = $fieldsCol
+                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item['visibility']])
+                ->toArray();
 
-        $defaults = $fieldsCol
-            ->filter(fn ($value, $key) => !empty($value['default']))
-            //->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
-            ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
-            ->toArray();
+            $defaults = $fieldsCol
+                ->filter(fn ($value, $key) => !empty($value['default']))
+                //->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
+                ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
+                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
+                ->toArray();
 
-        $extraAttributes = $model->fields()
-            ->get()
-            //            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
-            ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
-            ->toArray();
+            $extraAttributes = $model->fields()
+                ->get()
+                //            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
+                ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
+                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
+                ->toArray();
 
-        return array_merge($defaults, $extraAttributes);
+            return array_merge($defaults, $extraAttributes);
+        }
+
+        return [];
     }
 }
