@@ -25,10 +25,19 @@ class ModelFieldsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
+
+        $this->publishes([
+            __DIR__ . '/../config/model-fields.php' => config_path('model-fields.php'),
+        ]);
     }
 
     public function register()
     {
         $this->app->register(AuthServiceProvider::class);
+
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/model-fields.php',
+            'model-fields'
+        );
     }
 }
