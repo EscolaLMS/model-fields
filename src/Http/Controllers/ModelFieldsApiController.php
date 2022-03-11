@@ -38,7 +38,7 @@ class ModelFieldsApiController extends EscolaLmsBaseController implements ModelF
             $input['class_type'],
             $input['name'],
             $input['type'],
-            $input['default'],
+            $input['default'] ?? '',
             isset($input['rules']) ? json_decode($input['rules']) : null
         );
 
