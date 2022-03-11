@@ -94,6 +94,19 @@ class ModelFieldsApiTest extends TestCase
         $this->assertEquals($result->getData()->data->class_type, $input['class_type']);
         $this->assertEquals($result->getData()->data->name, $input['name']);
         $this->assertEquals($result->getData()->data->type, $input['type']);
+
+        $input = [
+            'class_type' => User::class,
+            'name' => 'no_default_value',
+            'type' => MetaFieldTypeEnum::TEXT,
+        ];
+        $result = $this->actingAs($this->user, 'api')->postJson('/api/admin/model-fields', $input);
+
+        $result->assertStatus(201);
+        $this->assertEquals($result->getData()->data->class_type, $input['class_type']);
+        $this->assertEquals($result->getData()->data->name, $input['name']);
+        $this->assertEquals($result->getData()->data->type, $input['type']);
+        $this->assertEquals($result->getData()->data->default, '');
     }
 
     public function testDeleteMeta()
