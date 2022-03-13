@@ -9,13 +9,10 @@ use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use Illuminate\Validation\ValidationException;
-// use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Cache;
 
 class ModelFieldsService implements ModelFieldsServiceContract
 {
-
-
     public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, $visibility = 1 << 0): Metadata
     {
         if (!MetaFieldTypeEnum::hasValue($type)) {
@@ -23,12 +20,13 @@ class ModelFieldsService implements ModelFieldsServiceContract
                 'type' => [sprintf('type must be one of %s', implode(",", MetaFieldTypeEnum::getValues()))],
             ]);
         }
+
+        Cache::flush();
+
         return Metadata::updateOrCreate(
             ['class_type' => $class_type, 'name' => $name],
             ['type' => $type, 'default' => $default, 'rules' => $rules, 'visibility' => $visibility]
         );
-
-        // Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
     }
 
     public function removeMetaField(string $class_type, string $name): bool
@@ -41,7 +39,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
             ['class_type' => $class_type, 'name' => $name]
         )->delete();
 
-        // Cache::tags([sprintf("modelfields.%s", $class_type)])->flush();
+        Cache::flush();
 
         return $bool;
     }
@@ -49,14 +47,11 @@ class ModelFieldsService implements ModelFieldsServiceContract
     public function getFieldsMetadata(string $class_type): Collection
     {
         if (config('model-fields.enabled')) {
-            $key = sprintf("modelfields.meta.%s", $class_type);
-            $tag = sprintf("modelfields.%s", $class_type);
-            // if (!Cache::has($key)) {
-            $fields = Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
-            // Cache::tags([$tag])->put($key, $fields);
-            // }
-            // return Cache::tags([$tag])->get($key);
-            return $fields;
+            $key = sprintf("modelfields.%s", $class_type);
+
+            return Cache::rememberForever($key, function () use ($class_type) {
+                return Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
+            });
         }
 
         return collect([]);
@@ -69,6 +64,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
                 ->mapWithKeys(fn ($item, $key) => [$item['name'] => $item['rules']])
                 ->toArray();
         }
+
         return [];
     }
 
@@ -97,10 +93,10 @@ class ModelFieldsService implements ModelFieldsServiceContract
     public function getExtraAttributesValues(Model $model, $visibility = null): array
     {
         if (config('model-fields.enabled')) {
+            $class = get_class($model);
+            $key = sprintf("modelfieldsvalues.%s.%s", $class, $model->getKey());
 
-            $fieldsCol = self::getFieldsMetadata(get_class($model));
-
-
+            $fieldsCol = self::getFieldsMetadata($class);
 
             $fields = $fieldsCol
                 ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
@@ -116,8 +112,11 @@ class ModelFieldsService implements ModelFieldsServiceContract
                 ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
                 ->toArray();
 
-            $extraAttributes = $model->fields()
-                ->get()
+            $modelFields = Cache::rememberForever($key, function () use ($class, $model, $visibility) {
+                return $model->fields()->get();
+            });
+
+            $extraAttributes = $modelFields
                 //            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
                 ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
                 ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])

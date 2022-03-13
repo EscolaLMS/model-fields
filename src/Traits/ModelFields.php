@@ -6,6 +6,7 @@ use EscolaLms\ModelFields\Models\Field;
 use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Facades\ModelFields as ModelFieldsFacade;
+use Illuminate\Support\Facades\Cache;
 
 trait ModelFields
 {
@@ -59,13 +60,14 @@ trait ModelFields
         $extraFields = $this->extraFields ?? collect();
         unset($this->extraFields);
         $savedState = parent::save($options);
+        $this->clearModelFieldsValuesCache();
         $values = $extraFields->toArray();
         $names = $extraFields->map(fn ($item) => $item['name'])->toArray();
         $this->fields()->whereIn('name', $names)->delete();
         $this->fields()->createMany($values);
+
         return $savedState;
     }
-
 
     public function getAttribute($key)
     {
@@ -84,16 +86,17 @@ trait ModelFields
 
     public function setAttribute($key, $value)
     {
+        $this->clearModelFieldsValuesCache();
 
         $metaFields =  ModelFieldsFacade::getFieldsMetadata(static::class)
             ->mapWithKeys(fn ($item) =>  [$item['name'] => $item])
             ->toArray();
 
         if (array_key_exists($key, $metaFields)) {
-
             $this->extraFields = isset($this->extraFields) ? $this->extraFields->prepend(['name' => $key, 'value' => $value]) : collect([
                 ['name' => $key, 'value' => $value]
             ]);
+
             return;
         }
 
@@ -109,5 +112,12 @@ trait ModelFields
     public function fields()
     {
         return $this->morphMany(Field::class, 'class');
+    }
+
+    private function clearModelFieldsValuesCache(): void
+    {
+        if ($this->exists) {
+            Cache::forget(sprintf("modelfieldsvalues.%s.%s", static::class, parent::getKey()));
+        }
     }
 }
