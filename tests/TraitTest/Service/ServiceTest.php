@@ -6,18 +6,15 @@ use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Tests\TestCase;
 use EscolaLms\ModelFields\Tests\TraitTest\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
-use EscolaLms\ModelFields\Services\ModelFieldsService;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 
-
 class ServiceTest extends TestCase
 {
-
-    use DatabaseTransactions;
+    use DatabaseTransactions, WithFaker;
     private ModelFieldsServiceContract $service;
 
     public function setUp(): void
@@ -206,5 +203,34 @@ class ServiceTest extends TestCase
         $this->assertEquals($user->interested_in_tests, true);
 
         $this->assertNull($user->title);
+    }
+
+    public function testFirstOrCreate()
+    {
+        $user = User::create([
+            'email' => $this->faker->unique()->safeEmail,
+            'first_name' => 'first_name',
+            'last_name' => 'last_name',
+            'description' => 'aaa',
+        ]);
+
+        $existingUser = User::firstOrCreate(
+            ['email' => $user->email, 'description' => $user->description],
+        );
+
+        $this->assertEquals($existingUser->getKey(), $user->getKey());
+        $this->assertEquals($existingUser->first_name, $user->first_name);
+        $this->assertEquals($existingUser->description, $user->description);
+
+        $email = $this->faker->unique()->safeEmail;
+        $newUser = User::firstOrCreate(
+            ['first_name' => 'first_name', 'description' => 'bbb'],
+            ['email' => $email, 'last_name' => 'last_name']
+        );
+
+        $this->assertNotEquals($newUser->getKey(), $user->getKey());
+        $this->assertEquals($newUser->first_name, 'first_name');
+        $this->assertEquals($newUser->description, 'bbb');
+        $this->assertEquals($newUser->email, $email);
     }
 }
