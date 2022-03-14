@@ -216,4 +216,33 @@ class ServiceTest extends TestCase
 
         $this->assertNull($user->title);
     }
+
+    public function testFirstOrCreate()
+    {
+        $user = User::create([
+            'email' => $this->faker->unique()->safeEmail,
+            'first_name' => 'first_name',
+            'last_name' => 'last_name',
+            'description' => 'aaa',
+        ]);
+
+        $existingUser = User::firstOrCreate(
+            ['email' => $user->email, 'description' => $user->description],
+        );
+
+        $this->assertEquals($existingUser->getKey(), $user->getKey());
+        $this->assertEquals($existingUser->first_name, $user->first_name);
+        $this->assertEquals($existingUser->description, $user->description);
+
+        $email = $this->faker->unique()->safeEmail;
+        $newUser = User::firstOrCreate(
+            ['first_name' => 'first_name', 'description' => 'bbb'],
+            ['email' => $email, 'last_name' => 'last_name']
+        );
+
+        $this->assertNotEquals($newUser->getKey(), $user->getKey());
+        $this->assertEquals($newUser->first_name, 'first_name');
+        $this->assertEquals($newUser->description, 'bbb');
+        $this->assertEquals($newUser->email, $email);
+    }
 }

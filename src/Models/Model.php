@@ -127,6 +127,33 @@ abstract class Model extends BaseModel
         return $this->morphMany(Field::class, 'class');
     }
 
+    public static function firstOrCreate(array $attributes = [], array $values = [])
+    {
+        $service = App::make(ModelFieldsServiceContract::class);
+        $modelFieldKeys = $service->getFieldsMetadata(static::class)->pluck('name')->toArray();
+        $baseAttributes = array_diff_key($attributes, array_flip($modelFieldKeys));
+        $additionalAttributes = array_diff_key($attributes, $baseAttributes);
+
+        $query = parent::query()->where($baseAttributes);
+
+        if ($instance = $query->first()) {
+            foreach ($additionalAttributes as $key => $value) {
+                $query = $query->whereHas('fields', function ($query) use ($key, $value){
+                    return $query->where([
+                        ['name', '=', $key],
+                        ['value', '=', $value],
+                    ]);
+                });
+            }
+
+            if ($query->exists()) {
+                return $instance;
+            }
+        }
+
+        return parent::query()->create(array_merge($attributes, $values));
+    }
+
     private function clearModelFieldsValuesCache(): void
     {
         if ($this->exists) {
