@@ -11,6 +11,7 @@ use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 use Faker\Generator as Faker;
 
@@ -145,7 +146,6 @@ class ServiceTest extends TestCase
         $this->assertEquals(Field::all()->count(), 0);
     }
 
-
     public function testModel()
     {
         $extraAttributes = [
@@ -155,7 +155,6 @@ class ServiceTest extends TestCase
             'consents' => ['consent1' => true, 'consent2' => false],
             'extra_points' => 1000
         ];
-
 
         $user = User::create(array_merge([
             'first_name' => 'aaa',
@@ -178,9 +177,7 @@ class ServiceTest extends TestCase
         $user->description = 'abc';
         $user->interested_in_tests = true;
         $user->save();
-
         $user = User::find($user->id);
-
         $this->assertEquals($user->description, 'abc');
         $this->assertEquals($user->interested_in_tests, true);
 
