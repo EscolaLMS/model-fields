@@ -61,7 +61,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
     {
         if (config('model-fields.enabled')) {
             return $this->getFieldsMetadata($class_type)
-                ->mapWithKeys(fn ($item, $key) => [$item['name'] => $item['rules']])
+                ->mapWithKeys(fn ($item, $key) => [$item['name'] => is_array($item['rules']) ? $item['rules'] : []])
                 ->toArray();
         }
 
