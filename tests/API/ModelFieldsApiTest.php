@@ -80,13 +80,24 @@ class ModelFieldsApiTest extends TestCase
 
     public function testCreateOrUpdate()
     {
+        $extraField = [
+            [
+                'i18n' => [
+                    'pl' => 'i18n pl',
+                    'en' => 'i18n en',
+                ]
+            ]
+        ];
+
         $input = [
             'class_type' => User::class,
             'name' => 'description',
             'type' => MetaFieldTypeEnum::TEXT,
             'default' => 'lorem ipsum',
-            'rules' => json_encode(['required', 'string', 'max:255'])
+            'rules' => json_encode(['required', 'string', 'max:255']),
+            'extra' => json_encode($extraField),
         ];
+
         $result = $this->actingAs($this->user, 'api')->postJson('/api/admin/model-fields', $input);
 
         $result->assertStatus(200);
@@ -94,6 +105,7 @@ class ModelFieldsApiTest extends TestCase
         $this->assertEquals($result->getData()->data->class_type, $input['class_type']);
         $this->assertEquals($result->getData()->data->name, $input['name']);
         $this->assertEquals($result->getData()->data->type, $input['type']);
+        $result->assertJsonFragment(['extra' => $extraField]);
 
         $input = [
             'class_type' => User::class,

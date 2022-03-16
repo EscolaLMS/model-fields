@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ModelFieldsService implements ModelFieldsServiceContract
 {
-    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, $visibility = 1 << 0): Metadata
+    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, $visibility = 1 << 0, array $extra = null): Metadata
     {
         if (!MetaFieldTypeEnum::hasValue($type)) {
             throw ValidationException::withMessages([
@@ -25,7 +25,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
         return Metadata::updateOrCreate(
             ['class_type' => $class_type, 'name' => $name],
-            ['type' => $type, 'default' => $default, 'rules' => $rules, 'visibility' => $visibility]
+            ['type' => $type, 'default' => $default, 'rules' => $rules, 'visibility' => $visibility, 'extra' => $extra]
         );
     }
 
