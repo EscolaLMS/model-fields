@@ -39,7 +39,9 @@ class ModelFieldsApiController extends EscolaLmsBaseController implements ModelF
             $input['name'],
             $input['type'],
             $input['default'] ?? '',
-            isset($input['rules']) ? json_decode($input['rules']) : null
+            isset($input['rules']) ? json_decode($input['rules']) : null,
+            1 << 0,
+            isset($input['extra']) ? json_decode($input['extra']) : null,
         );
 
         return $this->sendResponseForResource(MetadataResource::make($field), "meta field created or updated successfully");
