@@ -9,7 +9,7 @@ use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\ModelFields\Tests\Models\User;
 use Illuminate\Support\Facades\App;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
-
+use Illuminate\Support\Facades\Config;
 
 class ModelFieldsApiTest extends TestCase
 {
@@ -72,8 +72,12 @@ class ModelFieldsApiTest extends TestCase
 
         $metaFields = $this->service->getFieldsMetadata($class_type);
 
+        Config::set('model-fields.enabled', false);
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
+        $this->assertEmpty($result->getData()->data);
 
+        Config::set('model-fields.enabled', true);
+        $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
         $this->assertEquals(count($result->getData()->data), count($metaFields));
         $this->assertEquals($result->getData()->data[0]->name, $metaFields[0]['name']);
     }
