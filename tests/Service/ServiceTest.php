@@ -6,15 +6,12 @@ use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Tests\TestCase;
 use EscolaLms\ModelFields\Tests\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
-use EscolaLms\ModelFields\Services\ModelFieldsService;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 use Faker\Generator as Faker;
-
 
 class ServiceTest extends TestCase
 {
@@ -244,5 +241,59 @@ class ServiceTest extends TestCase
         $this->assertEquals($newUser->first_name, 'first_name');
         $this->assertEquals($newUser->description, 'bbb');
         $this->assertEquals($newUser->email, $email);
+    }
+
+    public function testGetFieldsMetadata(): void
+    {
+        $this->setPackageStatus(false);
+        $rules = $this->service->getFieldsMetadata(User::class);
+        $this->assertEmpty($rules);
+
+        $this->setPackageStatus(true);
+        $rules = $this->service->getFieldsMetadata(User::class);
+        $this->assertNotEmpty($rules);
+    }
+
+    public function testGetFieldsMetadataRules(): void
+    {
+        $this->setPackageStatus(false);
+        $rules = $this->service->getFieldsMetadataRules(User::class);
+        $this->assertEmpty($rules);
+
+        $this->setPackageStatus(true);
+        $rules = $this->service->getFieldsMetadataRules(User::class);
+        $this->assertNotEmpty($rules);
+    }
+
+    public function testGetExtraAttributesValues(): void
+    {
+        $extraAttributes = [
+            'description' => 'aaa',
+            'interested_in_tests' => false,
+            'aaaa' => 'aaaa',
+            'consents' => ['consent1' => true, 'consent2' => false],
+            'extra_points' => 1000
+        ];
+
+        $user = User::create(array_merge([
+            'first_name' => 'aaa',
+            'last_name' => 'aaa',
+            'email' => $this->faker->unique()->safeEmail,
+            'description' => 'aaa',
+            'interested_in_tests' => false,
+        ], $extraAttributes));
+
+        $this->setPackageStatus(false);
+        $rules = $this->service->getExtraAttributesValues($user);
+        $this->assertEmpty($rules);
+
+        $this->setPackageStatus(true);
+        $rules = $this->service->getExtraAttributesValues($user);
+        $this->assertNotEmpty($rules);
+    }
+
+    private function setPackageStatus(bool $enable)
+    {
+        Config::set('model-fields.enabled', $enable);
     }
 }
