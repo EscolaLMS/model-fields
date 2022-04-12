@@ -1,7 +1,5 @@
 # Model Fields
 
-# Templates
-
 [![swagger](https://img.shields.io/badge/documentation-swagger-green)](https://escolalms.github.io/model-fields/)
 [![codecov](https://codecov.io/gh/EscolaLMS/model-fields/branch/main/graph/badge.svg?token=NRAN4R8AGZ)](https://codecov.io/gh/EscolaLMS/model-fields)
 [![phpunit](https://github.com/EscolaLMS/model-fields/actions/workflows/test.yml/badge.svg)](https://github.com/EscolaLMS/model-fields/actions/workflows/test.yml)
