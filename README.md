@@ -27,6 +27,7 @@ Details documentation is provided as an example
 
 - `composer require escolalms/model-fields`
 - `php artisan migrate`
+- `php artisan db:seed --class="EscolaLms\ModelFields\Database\Seeders\PermissionTableSeeder"`
 
 ## Database
 
@@ -391,10 +392,52 @@ class UserCreateRequest extends FormRequest
 
 In php 7.4 user `array_merge` instead of spread `...` operator.
 
+## Endpoints
+
+All the endpoints are defined in [![swagger](https://img.shields.io/badge/documentation-swagger-green)](https://escolalms.github.io/model-fields/).
+
 ## Tests
 
 Run `./vendor/bin/phpunit` to run tests. See [tests](tests) folder as it's quite good staring point as documentation appendix.
 
-## Roadmap. Todo
+## Events
+
+This package does not dispatch any events.
+
+## Listeners
+
+This package does not listen for any events
+
+## How to use this on frontend.
+
+### Admin panel
+
+All the endpoints defined in [![swagger](https://img.shields.io/badge/documentation-swagger-green)](https://escolalms.github.io/model-fields/) are for admin panel.
+
+There is native component you can use to implement this in [admin panel](https://github.com/EscolaLMS/Admin/tree/main/src/components/ModelFields) for any model that allows extending
+
+```jsx
+<ModelFields class_type="EscolaLms\Auth\Models\User" />
+```
+
+Example in admin panel
+
+**List of user model fields**
+
+![List of user model fields](docs/list.png "List of user model fields")
+
+**Creating/editing model field**
+
+![Creating/editing model field](docs/edit.png "Creating/editing model field")
+
+### Front Application
+
+See example above how to extend controllers to CRUD model fields to give model
+
+## Permissions
+
+Permissions are defined in [seeder](packages/model-fields/database/seeders/PermissionTableSeeder.php)
+
+## Roadmap. Todo. Troubleshooting.
 
 - `firstOrCreate` doesn't work when passing extra attributes
