@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use Illuminate\Support\Facades\App;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
+use Illuminate\Support\Facades\Cache;
 
 abstract class Model extends BaseModel
 {
@@ -71,10 +72,12 @@ abstract class Model extends BaseModel
         $extraFields = $this->extraFields;
         unset($this->extraFields);
         $savedState = parent::save($options);
+        $this->clearModelFieldsValuesCache();
         $values = $extraFields->toArray();
         $names = $extraFields->map(fn ($item) => $item['name'])->toArray();
         $this->fields()->whereIn('name', $names)->delete();
         $this->fields()->createMany($values);
+
         return $savedState;
     }
 
@@ -95,6 +98,7 @@ abstract class Model extends BaseModel
 
     public function setAttribute($key, $value)
     {
+        $this->clearModelFieldsValuesCache();
 
         $metaFields = $this->service
             ->getFieldsMetadata(static::class)
@@ -102,10 +106,10 @@ abstract class Model extends BaseModel
             ->toArray();
 
         if (array_key_exists($key, $metaFields)) {
-
             $this->extraFields = isset($this->extraFields) ? $this->extraFields->prepend(['name' => $key, 'value' => $value]) : collect([
                 ['name' => $key, 'value' => $value]
             ]);
+
             return;
         }
 
@@ -121,5 +125,39 @@ abstract class Model extends BaseModel
     public function fields()
     {
         return $this->morphMany(Field::class, 'class');
+    }
+
+    public static function firstOrCreate(array $attributes = [], array $values = [])
+    {
+        $service = App::make(ModelFieldsServiceContract::class);
+        $modelFieldKeys = $service->getFieldsMetadata(static::class)->pluck('name')->toArray();
+        $baseAttributes = array_diff_key($attributes, array_flip($modelFieldKeys));
+        $additionalAttributes = array_diff_key($attributes, $baseAttributes);
+
+        $query = parent::query()->where($baseAttributes);
+
+        if ($instance = $query->first()) {
+            foreach ($additionalAttributes as $key => $value) {
+                $query = $query->whereHas('fields', function ($query) use ($key, $value){
+                    return $query->where([
+                        ['name', '=', $key],
+                        ['value', '=', $value],
+                    ]);
+                });
+            }
+
+            if ($query->exists()) {
+                return $instance;
+            }
+        }
+
+        return parent::query()->create(array_merge($attributes, $values));
+    }
+
+    private function clearModelFieldsValuesCache(): void
+    {
+        if ($this->exists) {
+            Cache::forget(sprintf("modelfieldsvalues.%s.%s", static::class, parent::getKey()));
+        }
     }
 }

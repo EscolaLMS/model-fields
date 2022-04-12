@@ -28,13 +28,12 @@ class MetadataCreateOrUpdateRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
             'name' => ['required', 'string'],
             'type' => ['required', new EnumValue(MetaFieldTypeEnum::class)],
             'rules' => ['sometimes', 'json'],
             'extra' => ['sometimes', 'json'],
-            'default' => ['sometimes', 'string'],
+            'default' => ['nullable', 'string'],
             'class_type' => ['required', 'string'],
         ];
     }

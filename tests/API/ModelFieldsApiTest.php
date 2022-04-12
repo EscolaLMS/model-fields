@@ -9,7 +9,7 @@ use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\ModelFields\Tests\Models\User;
 use Illuminate\Support\Facades\App;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
-
+use Illuminate\Support\Facades\Config;
 
 class ModelFieldsApiTest extends TestCase
 {
@@ -72,21 +72,36 @@ class ModelFieldsApiTest extends TestCase
 
         $metaFields = $this->service->getFieldsMetadata($class_type);
 
+        Config::set('model-fields.enabled', false);
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
+        $this->assertEmpty($result->getData()->data);
 
+        Config::set('model-fields.enabled', true);
+        $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
         $this->assertEquals(count($result->getData()->data), count($metaFields));
         $this->assertEquals($result->getData()->data[0]->name, $metaFields[0]['name']);
     }
 
     public function testCreateOrUpdate()
     {
+        $extraField = [
+            [
+                'i18n' => [
+                    'pl' => 'i18n pl',
+                    'en' => 'i18n en',
+                ]
+            ]
+        ];
+
         $input = [
             'class_type' => User::class,
             'name' => 'description',
             'type' => MetaFieldTypeEnum::TEXT,
             'default' => 'lorem ipsum',
-            'rules' => json_encode(['required', 'string', 'max:255'])
+            'rules' => json_encode(['required', 'string', 'max:255']),
+            'extra' => json_encode($extraField),
         ];
+
         $result = $this->actingAs($this->user, 'api')->postJson('/api/admin/model-fields', $input);
 
         $result->assertStatus(200);
@@ -94,6 +109,20 @@ class ModelFieldsApiTest extends TestCase
         $this->assertEquals($result->getData()->data->class_type, $input['class_type']);
         $this->assertEquals($result->getData()->data->name, $input['name']);
         $this->assertEquals($result->getData()->data->type, $input['type']);
+        $result->assertJsonFragment(['extra' => $extraField]);
+
+        $input = [
+            'class_type' => User::class,
+            'name' => 'no_default_value',
+            'type' => MetaFieldTypeEnum::TEXT,
+        ];
+        $result = $this->actingAs($this->user, 'api')->postJson('/api/admin/model-fields', $input);
+
+        $result->assertStatus(201);
+        $this->assertEquals($result->getData()->data->class_type, $input['class_type']);
+        $this->assertEquals($result->getData()->data->name, $input['name']);
+        $this->assertEquals($result->getData()->data->type, $input['type']);
+        $this->assertEquals($result->getData()->data->default, '');
     }
 
     public function testDeleteMeta()
