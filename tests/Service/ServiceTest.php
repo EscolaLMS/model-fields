@@ -100,7 +100,7 @@ class ServiceTest extends TestCase
 
         $this->assertEquals(Field::all()->count(), 2);
 
-        $user->delete();
+        $user->forceDelete();
 
         $this->assertEquals(Field::all()->count(), 0);
     }
