@@ -15,7 +15,7 @@ interface ModelFieldsServiceContract
 
     public function getFieldsMetadata(string $class_type): Collection;
 
-    public function castField($value, Metadata $field);
+    public function castField($value, ?Metadata $field);
 
     public function getExtraAttributesValues(Model $model, $visibility = null): array;
 
