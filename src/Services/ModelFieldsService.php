@@ -68,9 +68,9 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return [];
     }
 
-    public function castField($value, Metadata $field)
+    public function castField($value, ?Metadata $field)
     {
-        $type = $field['type'];
+        $type = $field['type'] ?? null;
         switch ($type) {
             case MetaFieldTypeEnum::BOOLEAN:
                 return (bool) $value;
@@ -97,7 +97,6 @@ class ModelFieldsService implements ModelFieldsServiceContract
             $key = sprintf("modelfieldsvalues.%s.%s", $class, $model->getKey());
 
             $fieldsCol = self::getFieldsMetadata($class);
-
             $fields = $fieldsCol
                 ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
 
@@ -107,8 +106,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
             $defaults = $fieldsCol
                 ->filter(fn ($value, $key) => !empty($value['default']))
-                //->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
-                ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
+                ->filter(fn ($item) =>  $this->checkVisibility($visibility, ($visibilities[$item['name']] ?? 0)))
                 ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
                 ->toArray();
 
@@ -117,9 +115,8 @@ class ModelFieldsService implements ModelFieldsServiceContract
             });
 
             $extraAttributes = $modelFields
-                //            ->filter(fn ($item) => is_int($visibility) ? $visibility >= $visibilities[$item['name']] : true)
-                ->filter(fn ($item) => $this->checkVisibility($visibility, $visibilities[$item['name']]))
-                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], $fields[$item['name']])])
+                ->filter(fn ($item) => $this->checkVisibility($visibility, ($visibilities[$item['name']] ?? 0)))
+                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], ($fields[$item['name']] ?? null))])
                 ->toArray();
 
             return array_merge($defaults, $extraAttributes);
