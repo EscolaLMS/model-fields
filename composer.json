@@ -10,7 +10,8 @@
   "require-dev": {
     "escolalms/auth": "^0",
     "phpunit/phpunit": "^9.0",
-    "orchestra/testbench": ">=5.0"
+    "orchestra/testbench": ">=5.0",
+    "infection/infection": "^0.26.13"
   },
   "license": "MIT",
   "authors": [
@@ -31,6 +32,11 @@
       "providers": [
         "EscolaLms\\ModelFields\\ModelFieldsServiceProvider"
       ]
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "infection/extension-installer": true
     }
   }
 }
