@@ -51,5 +51,5 @@ jobs:
 
       - name: Run tests
         run: ./vendor/bin/infection --min-msi=48 --min-covered-msi=70 --threads=4
-        with:
+        env:
           INFECTION_DASHBOARD_API_KEY: ${{ secrets.INFECTION_DASHBOARD_API_KEY }}
