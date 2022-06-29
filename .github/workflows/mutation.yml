@@ -50,4 +50,4 @@ jobs:
           vendor/bin/testbench passport:client --personal --no-interaction
 
       - name: Run tests
-        run: ./vendor/bin/infection
+        run: ./vendor/bin/infection --min-msi=48 --min-covered-msi=70 --threads=4
