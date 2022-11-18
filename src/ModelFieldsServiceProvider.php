@@ -25,6 +25,7 @@ class ModelFieldsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'metadata');
 
         $this->publishes([
             __DIR__ . '/../config/model-fields.php' => config_path('model-fields.php'),

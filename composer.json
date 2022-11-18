@@ -10,7 +10,7 @@
   "require-dev": {
     "escolalms/auth": "^0",
     "phpunit/phpunit": "^9.0",
-    "orchestra/testbench": ">=5.0",
+    "orchestra/testbench": "^6",
     "infection/infection": "^0"
   },
   "license": "MIT",
