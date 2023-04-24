@@ -2,8 +2,10 @@
 
 namespace EscolaLms\ModelFields\Services\Contracts;
 
+use EscolaLms\Core\Dtos\OrderDto;
 use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Models\Model;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface ModelFieldsServiceContract
@@ -14,6 +16,8 @@ interface ModelFieldsServiceContract
     public function removeMetaField(string $class_type, string $name);
 
     public function getFieldsMetadata(string $class_type): Collection;
+
+    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage, ?OrderDto $orderDto): LengthAwarePaginator;
 
     public function castField($value, ?Metadata $field);
 

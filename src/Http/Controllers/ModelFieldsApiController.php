@@ -2,6 +2,7 @@
 
 namespace EscolaLms\ModelFields\Http\Controllers;
 
+use EscolaLms\Core\Dtos\OrderDto;
 use EscolaLms\Core\Http\Controllers\EscolaLmsBaseController;
 use Illuminate\Http\JsonResponse;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
@@ -26,7 +27,7 @@ class ModelFieldsApiController extends EscolaLmsBaseController implements ModelF
         if (empty($classType)) {
             return $this->sendError("class_type is required", 400);
         }
-        $metaFields = $this->service->getFieldsMetadata($classType);
+        $metaFields = $this->service->getFieldsMetadataListPaginated($classType, $request->get('per_page', 15),  OrderDto::instantiateFromRequest($request));
         return $this->sendResponseForResource(MetadataResource::collection($metaFields), "metaFields list retrieved successfully");
     }
 
