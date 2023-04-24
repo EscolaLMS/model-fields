@@ -17,7 +17,7 @@ interface ModelFieldsServiceContract
 
     public function getFieldsMetadata(string $class_type): Collection;
 
-    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage, ?OrderDto $orderDto): Collection|LengthAwarePaginator;
+    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage = 15, ?OrderDto $orderDto = null): Collection|LengthAwarePaginator;
 
     public function castField($value, ?Metadata $field);
 

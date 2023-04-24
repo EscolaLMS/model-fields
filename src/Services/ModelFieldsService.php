@@ -59,7 +59,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return collect([]);
     }
 
-    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage, ?OrderDto $orderDto): Collection|LengthAwarePaginator
+    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage = 15, ?OrderDto $orderDto = null): Collection|LengthAwarePaginator
     {
         if (!config('model-fields.enabled')) {
             return collect([]);

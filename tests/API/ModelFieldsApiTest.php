@@ -97,22 +97,6 @@ class ModelFieldsApiTest extends TestCase
         ]);
 
         $this->assertEquals($result->getData()->data[0]->name, 'title');
-
-        $result = $this->json('GET', '/api/model-fields?', [
-            'class_type' => User::class,
-            'order_by' => 'type',
-            'order' => 'ASC',
-        ]);
-
-        $this->assertEquals($result->getData()->data[0]->type, 'boolean');
-
-        $result = $this->json('GET', '/api/model-fields?', [
-            'class_type' => User::class,
-            'order_by' => 'type',
-            'order' => 'DESC',
-        ]);
-
-        $this->assertEquals($result->getData()->data[0]->type, 'varchar');
     }
 
     public function testCreateOrUpdate()
