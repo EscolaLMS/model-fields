@@ -87,7 +87,7 @@ class ModelFieldsApiTest extends TestCase
     {
         Config::set('model-fields.enabled', false);
 
-        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields?', [
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields', [
             'class_type' => User::class,
             'order_by' => 'name',
             'order' => 'ASC',
@@ -96,7 +96,7 @@ class ModelFieldsApiTest extends TestCase
 
         Config::set('model-fields.enabled', true);
 
-        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields?', [
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields', [
             'class_type' => User::class,
             'order_by' => 'name',
             'order' => 'ASC',
@@ -104,7 +104,7 @@ class ModelFieldsApiTest extends TestCase
 
         $this->assertEquals($response->getData()->data[0]->name, 'consents');
 
-        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields?', [
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields', [
             'class_type' => User::class,
             'order_by' => 'name',
             'order' => 'DESC',
