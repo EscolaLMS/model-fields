@@ -13,7 +13,7 @@ jobs:
   phpunit-code-coverage:
     runs-on: ubuntu-latest
     container:
-      image: escolalms/php:7.4
+      image: escolalms/php:8.2
 
     services:
       mysql:
@@ -65,10 +65,13 @@ jobs:
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
 
-      - name: Convert
-        run: ./cc-test-reporter format-coverage coverage.xml -t clover -o codeclimate.0.json
+          - name: SafeDirFix
+            run: git config --global safe.directory '*'
 
-      - name: Upload
-        run: ./cc-test-reporter upload-coverage -i codeclimate.0.json
-        env:
-          CC_TEST_REPORTER_ID: 47c815de0a683e20a011c4d280a40c1ccbeeac7607e56e015d7a4e1e1ee4a61c
+          - name: Convert
+            run: ./cc-test-reporter format-coverage coverage.xml -t clover -o codeclimate.0.json
+
+          - name: Upload
+            run: ./cc-test-reporter upload-coverage -i codeclimate.0.json
+            env:
+              CC_TEST_REPORTER_ID: 47c815de0a683e20a011c4d280a40c1ccbeeac7607e56e015d7a4e1e1ee4a61c
