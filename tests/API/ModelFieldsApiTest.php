@@ -85,6 +85,15 @@ class ModelFieldsApiTest extends TestCase
 
     public function testListAdmin()
     {
+        Config::set('model-fields.enabled', false);
+
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields?', [
+            'class_type' => User::class,
+            'order_by' => 'name',
+            'order' => 'ASC',
+        ]);
+        $this->assertEmpty($response->getData()->data);
+
         Config::set('model-fields.enabled', true);
 
         $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields?', [
