@@ -59,8 +59,11 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return collect([]);
     }
 
-    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage, ?OrderDto $orderDto): LengthAwarePaginator
+    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage, ?OrderDto $orderDto): Collection|LengthAwarePaginator
     {
+        if (!config('model-fields.enabled')) {
+            return collect([]);
+        }
 
         $query = Metadata::query()->whereIn('class_type', array_merge([$class_type], class_parents($class_type)));
 
