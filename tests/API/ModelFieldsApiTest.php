@@ -93,6 +93,8 @@ class ModelFieldsApiTest extends TestCase
             'order' => 'ASC',
         ]);
 
+        var_dump($response->json());
+
         $this->assertEquals($response->getData()->data[0]->name, 'consents');
 
         $response = $this->json('GET', '/api/admin/model-fields?', [
