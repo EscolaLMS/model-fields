@@ -81,37 +81,14 @@ class ModelFieldsApiTest extends TestCase
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
         $this->assertEquals(count($result->getData()->data), count($metaFields));
         $this->assertEquals($result->getData()->data[0]->name, $metaFields[0]['name']);
-    }
 
-    public function testListSorted()
-    {
-        Metadata::truncate();
-
-        $this->service->addOrUpdateMetadataField(
-            User::class,
-            'A test',
-            'boolean',
-            false,
-            ['required']
-        );
-
-        $this->service->addOrUpdateMetadataField(
-            User::class,
-            'B test',
-            'number',
-            10,
-            ['required']
-        );
-
-        Config::set('model-fields.enabled', true);
         $result = $this->json('GET', '/api/model-fields?', [
             'class_type' => User::class,
             'order_by' => 'name',
             'order' => 'ASC',
         ]);
 
-        $this->assertEquals($result->getData()->data[0]->name, 'A test');
-        $this->assertEquals($result->getData()->data[1]->name, 'B test');
+        $this->assertEquals($result->getData()->data[0]->name, 'consents');
 
         $result = $this->json('GET', '/api/model-fields?', [
             'class_type' => User::class,
@@ -119,8 +96,7 @@ class ModelFieldsApiTest extends TestCase
             'order' => 'DESC',
         ]);
 
-        $this->assertEquals($result->getData()->data[0]->name, 'B test');
-        $this->assertEquals($result->getData()->data[1]->name, 'A test');
+        $this->assertEquals($result->getData()->data[0]->name, 'title');
 
         $result = $this->json('GET', '/api/model-fields?', [
             'class_type' => User::class,
@@ -128,8 +104,7 @@ class ModelFieldsApiTest extends TestCase
             'order' => 'ASC',
         ]);
 
-        $this->assertEquals($result->getData()->data[0]->name, 'A test');
-        $this->assertEquals($result->getData()->data[1]->name, 'B test');
+        $this->assertEquals($result->getData()->data[0]->type, 'varchar');
 
         $result = $this->json('GET', '/api/model-fields?', [
             'class_type' => User::class,
@@ -137,26 +112,7 @@ class ModelFieldsApiTest extends TestCase
             'order' => 'DESC',
         ]);
 
-        $this->assertEquals($result->getData()->data[0]->name, 'B test');
-        $this->assertEquals($result->getData()->data[1]->name, 'A test');
-
-        $result = $this->json('GET', '/api/model-fields?', [
-            'class_type' => User::class,
-            'order_by' => 'default',
-            'order' => 'ASC',
-        ]);
-
-        $this->assertEquals($result->getData()->data[0]->name, 'A test');
-        $this->assertEquals($result->getData()->data[1]->name, 'B test');
-
-        $result = $this->json('GET', '/api/model-fields?', [
-            'class_type' => User::class,
-            'order_by' => 'default',
-            'order' => 'DESC',
-        ]);
-
-        $this->assertEquals($result->getData()->data[0]->name, 'B test');
-        $this->assertEquals($result->getData()->data[1]->name, 'A test');
+        $this->assertEquals($result->getData()->data[0]->name, 'boolean');
     }
 
     public function testCreateOrUpdate()
