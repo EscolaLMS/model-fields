@@ -65,11 +65,9 @@ class ModelFieldsService implements ModelFieldsServiceContract
             return collect([]);
         }
 
-        $query = Metadata::query()->whereIn('class_type', array_merge([$class_type], class_parents($class_type)));
-
-        if (!is_null($orderDto)) {
-            $query->orderBy($orderDto->getOrderBy() ?? 'id', $orderDto->getOrder() ?? 'asc');
-        }
+        $query = Metadata::query()
+            ->whereIn('class_type', array_merge([$class_type], class_parents($class_type)))
+            ->orderBy($orderDto?->getOrderBy() ?? 'id', $orderDto?->getOrder() ?? 'asc');
 
         return $query->paginate($perPage);
     }

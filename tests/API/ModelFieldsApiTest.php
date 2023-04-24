@@ -81,22 +81,27 @@ class ModelFieldsApiTest extends TestCase
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
         $this->assertEquals(count($result->getData()->data), count($metaFields));
         $this->assertEquals($result->getData()->data[0]->name, $metaFields[0]['name']);
+    }
 
-        $result = $this->json('GET', '/api/model-fields?', [
+    public function testListAdmin()
+    {
+        Config::set('model-fields.enabled', true);
+
+        $response = $this->json('GET', '/api/admin/model-fields?', [
             'class_type' => User::class,
             'order_by' => 'name',
             'order' => 'ASC',
         ]);
 
-        $this->assertEquals($result->getData()->data[0]->name, 'consents');
+        $this->assertEquals($response->getData()->data[0]->name, 'consents');
 
-        $result = $this->json('GET', '/api/model-fields?', [
+        $response = $this->json('GET', '/api/admin/model-fields?', [
             'class_type' => User::class,
             'order_by' => 'name',
             'order' => 'DESC',
         ]);
 
-        $this->assertEquals($result->getData()->data[0]->name, 'title');
+        $this->assertEquals($response->getData()->data[0]->name, 'title');
     }
 
     public function testCreateOrUpdate()
