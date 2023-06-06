@@ -5,6 +5,167 @@
         "version": "0.0.1"
     },
     "paths": {
+        "/api/admin/model-fields": {
+            "get": {
+                "tags": [
+                    "Model Fields"
+                ],
+                "summary": "Lists available Model extended fields",
+                "operationId": "7f964ba0a0e9de4faa144281193178ad",
+                "parameters": [
+                    {
+                        "name": "class_type",
+                        "in": "query",
+                        "description": "class type of which field is extended",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "pagination page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "order direction",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "order by field",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of available fields",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "map of templates identified by a slug value",
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "$ref": "#/components/schemas/ModelField"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "endpoint requires authentication"
+                    },
+                    "403": {
+                        "description": "user doesn't have required access rights"
+                    },
+                    "500": {
+                        "description": "server-side error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin Model Fields"
+                ],
+                "summary": "Create or update metafile",
+                "operationId": "b3cc641d0aa6e170c915efddc077b020",
+                "requestBody": {
+                    "description": "Metadata attributes",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Metadata"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Metadata created successfully"
+                    },
+                    "401": {
+                        "description": "endpoint requires authentication"
+                    },
+                    "403": {
+                        "description": "user doesn't have required access rights"
+                    },
+                    "422": {
+                        "description": "one of the parameters has invalid format"
+                    },
+                    "500": {
+                        "description": "server-side error"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Model Fields"
+                ],
+                "summary": "delete metafile and related values from model",
+                "operationId": "eb847cd08202a6bd19e8b9ad6c526377",
+                "requestBody": {
+                    "description": "Metadata attributes",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Metadata"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Metadata created successfully"
+                    },
+                    "401": {
+                        "description": "endpoint requires authentication"
+                    },
+                    "403": {
+                        "description": "user doesn't have required access rights"
+                    },
+                    "422": {
+                        "description": "one of the parameters has invalid format"
+                    },
+                    "500": {
+                        "description": "server-side error"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
         "/api/model-fields": {
             "get": {
                 "tags": [
@@ -48,88 +209,6 @@
                         "description": "server-side error"
                     }
                 }
-            }
-        },
-        "/api/admin/model-fields": {
-            "post": {
-                "tags": [
-                    "Admin Model Fields"
-                ],
-                "summary": "Create or update metafile",
-                "operationId": "6211e456cb452c2381b0c50c0584b514",
-                "requestBody": {
-                    "description": "Metadata attributes",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Metadata"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Metadata created successfully"
-                    },
-                    "401": {
-                        "description": "endpoint requires authentication"
-                    },
-                    "403": {
-                        "description": "user doesn't have required access rights"
-                    },
-                    "422": {
-                        "description": "one of the parameters has invalid format"
-                    },
-                    "500": {
-                        "description": "server-side error"
-                    }
-                },
-                "security": [
-                    {
-                        "passport": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Admin Model Fields"
-                ],
-                "summary": "delete metafile and related values from model",
-                "operationId": "6c2d09dbdf590976fedd7055284f2517",
-                "requestBody": {
-                    "description": "Metadata attributes",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Metadata"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Metadata created successfully"
-                    },
-                    "401": {
-                        "description": "endpoint requires authentication"
-                    },
-                    "403": {
-                        "description": "user doesn't have required access rights"
-                    },
-                    "422": {
-                        "description": "one of the parameters has invalid format"
-                    },
-                    "500": {
-                        "description": "server-side error"
-                    }
-                },
-                "security": [
-                    {
-                        "passport": []
-                    }
-                ]
             }
         }
     },
