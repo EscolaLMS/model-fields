@@ -12,7 +12,7 @@ interface ModelFieldsAdminApiContract
 {
     /**
      * @OA\Get(
-     *     path="/api/model-fields",
+     *     path="/api/admin/model-fields",
      *     summary="Lists available Model extended fields",
      *     tags={"Model Fields"},
      *     @OA\Parameter(
