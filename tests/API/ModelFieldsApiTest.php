@@ -3,6 +3,7 @@
 namespace EscolaLms\ModelFields\Tests\API;
 
 use EscolaLms\Core\Tests\CreatesUsers;
+use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Tests\TestCase;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\Core\Enums\UserRole;
@@ -80,6 +81,36 @@ class ModelFieldsApiTest extends TestCase
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
         $this->assertEquals(count($result->getData()->data), count($metaFields));
         $this->assertEquals($result->getData()->data[0]->name, $metaFields[0]['name']);
+    }
+
+    public function testListAdmin()
+    {
+        Config::set('model-fields.enabled', false);
+
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields', [
+            'class_type' => User::class,
+            'order_by' => 'name',
+            'order' => 'ASC',
+        ]);
+        $this->assertEmpty($response->getData()->data);
+
+        Config::set('model-fields.enabled', true);
+
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields', [
+            'class_type' => User::class,
+            'order_by' => 'name',
+            'order' => 'ASC',
+        ]);
+
+        $this->assertEquals($response->getData()->data[0]->name, 'consents');
+
+        $response = $this->actingAs($this->user, 'api')->json('GET', '/api/admin/model-fields', [
+            'class_type' => User::class,
+            'order_by' => 'name',
+            'order' => 'DESC',
+        ]);
+
+        $this->assertEquals($response->getData()->data[0]->name, 'title');
     }
 
     public function testCreateOrUpdate()

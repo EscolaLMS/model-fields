@@ -2,14 +2,16 @@
 
 namespace EscolaLms\ModelFields\Services;
 
+use EscolaLms\Core\Dtos\OrderDto;
+use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Models\Field;
 use EscolaLms\ModelFields\Models\Metadata;
+use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
-use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\ValidationException;
 
 class ModelFieldsService implements ModelFieldsServiceContract
 {
@@ -57,11 +59,24 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return collect([]);
     }
 
+    public function getFieldsMetadataListPaginated(string $class_type, ?int $perPage = 15, ?OrderDto $orderDto = null): Collection|LengthAwarePaginator
+    {
+        if (!config('model-fields.enabled')) {
+            return collect([]);
+        }
+
+        $query = Metadata::query()
+            ->whereIn('class_type', array_merge([$class_type], class_parents($class_type)))
+            ->orderBy($orderDto?->getOrderBy() ?? 'id', $orderDto?->getOrder() ?? 'asc');
+
+        return $query->paginate($perPage);
+    }
+
     public function getFieldsMetadataRules(string $class_type): array
     {
         if (config('model-fields.enabled')) {
             return $this->getFieldsMetadata($class_type)
-                ->mapWithKeys(fn ($item, $key) => [$item['name'] => is_array($item['rules']) ? $item['rules'] : []])
+                ->mapWithKeys(fn($item, $key) => [$item['name'] => is_array($item['rules']) ? $item['rules'] : []])
                 ->toArray();
         }
 
@@ -73,9 +88,9 @@ class ModelFieldsService implements ModelFieldsServiceContract
         $type = $field['type'] ?? null;
         switch ($type) {
             case MetaFieldTypeEnum::BOOLEAN:
-                return (bool) $value;
+                return (bool)$value;
             case MetaFieldTypeEnum::NUMBER:
-                return (float) ($value);
+                return (float)($value);
             case MetaFieldTypeEnum::JSON:
                 return json_decode($value, true);
             case MetaFieldTypeEnum::VARCHAR:
@@ -87,7 +102,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     private function checkVisibility(int $visibility = null, int $metadataFieldVisibility): bool
     {
-        return  is_int($visibility) ? $visibility &  $metadataFieldVisibility : true;
+        return is_int($visibility) ? $visibility & $metadataFieldVisibility : true;
     }
 
     public function getExtraAttributesValues(Model $model, $visibility = null): array
@@ -98,16 +113,16 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
             $fieldsCol = self::getFieldsMetadata($class);
             $fields = $fieldsCol
-                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item]);
+                ->mapWithKeys(fn($item, $key) => [$item['name'] => $item]);
 
             $visibilities = $fieldsCol
-                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item['visibility']])
+                ->mapWithKeys(fn($item, $key) => [$item['name'] => $item['visibility']])
                 ->toArray();
 
             $defaults = $fieldsCol
-                ->filter(fn ($value, $key) => !empty($value['default']))
-                ->filter(fn ($item) =>  $this->checkVisibility($visibility, ($visibilities[$item['name']] ?? 0)))
-                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['default'], $item)])
+                ->filter(fn($value, $key) => !empty($value['default']))
+                ->filter(fn($item) => $this->checkVisibility($visibility, ($visibilities[$item['name']] ?? 0)))
+                ->mapWithKeys(fn($item, $key) => [$item['name'] => self::castField($item['default'], $item)])
                 ->toArray();
 
             $modelFields = Cache::rememberForever($key, function () use ($class, $model, $visibility) {
@@ -115,8 +130,8 @@ class ModelFieldsService implements ModelFieldsServiceContract
             });
 
             $extraAttributes = $modelFields
-                ->filter(fn ($item) => $this->checkVisibility($visibility, ($visibilities[$item['name']] ?? 0)))
-                ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => self::castField($item['value'], ($fields[$item['name']] ?? null))])
+                ->filter(fn($item) => $this->checkVisibility($visibility, ($visibilities[$item['name']] ?? 0)))
+                ->mapWithKeys(fn($item, $key) => [$item['name'] => self::castField($item['value'], ($fields[$item['name']] ?? null))])
                 ->toArray();
 
             return array_merge($defaults, $extraAttributes);
