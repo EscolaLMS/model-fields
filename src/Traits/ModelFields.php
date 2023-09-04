@@ -143,7 +143,7 @@ trait ModelFields
     private function clearModelFieldsValuesCache(): void
     {
         if ($this->exists) {
-            Cache::forget(sprintf("modelfieldsvalues.%s.%s", static::class, parent::getKey()));
+            Cache::flush();
         }
     }
 }
