@@ -3,7 +3,6 @@
 namespace EscolaLms\ModelFields\Models;
 
 use Illuminate\Database\Eloquent\Model as BaseModel;
-use EscolaLms\ModelFields\Models\Field;
 use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use Illuminate\Support\Facades\App;
@@ -157,7 +156,7 @@ abstract class Model extends BaseModel
     private function clearModelFieldsValuesCache(): void
     {
         if ($this->exists) {
-            Cache::forget(sprintf("modelfieldsvalues.%s.%s", static::class, parent::getKey()));
+            Cache::flush();
         }
     }
 }
