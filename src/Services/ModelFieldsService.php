@@ -108,6 +108,10 @@ class ModelFieldsService implements ModelFieldsServiceContract
     public function getExtraAttributesValues(Model $model, $visibility = null): array
     {
         if (config('model-fields.enabled')) {
+            if (!array_key_exists('id', $model->getAttributes())) {
+                return [];
+            }
+
             $class = get_class($model);
             $key = sprintf("modelfieldsvalues.%s.%s", $class, $model->getKey());
 
