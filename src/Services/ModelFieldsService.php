@@ -11,6 +11,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class ModelFieldsService implements ModelFieldsServiceContract
@@ -48,7 +49,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public function getFieldsMetadata(string $class_type): Collection
     {
-        if (config('model-fields.enabled')) {
+        if (config('model-fields.enabled') && Schema::hasTable('model_fields_metadata')) {
             $key = sprintf("modelfields.%s", $class_type);
 
             return Cache::rememberForever($key, function () use ($class_type) {
