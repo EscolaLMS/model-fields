@@ -49,7 +49,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public function getFieldsMetadata(string $class_type): Collection
     {
-        if (config('model-fields.enabled') && Schema::hasTable('model_fields_metadata')) {
+        if (config('model-fields.enabled') && Schema::hasTable('model_fields_metadata') && class_exists(Cache::class, false)) {
             $key = sprintf("modelfields.%s", $class_type);
 
             return Cache::rememberForever($key, function () use ($class_type) {
