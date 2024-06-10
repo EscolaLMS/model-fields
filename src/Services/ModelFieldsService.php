@@ -9,8 +9,10 @@ use EscolaLms\ModelFields\Models\Metadata;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
@@ -49,11 +51,25 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public function getFieldsMetadata(string $class_type): Collection
     {
-        if (config('model-fields.enabled') && Schema::hasTable('model_fields_metadata') && class_exists(Cache::class, false)) {
+        // add result of hasTable to the cache to limit database queries
+        $tableExist = Cache::rememberForever('model_fields_metadata_table_exists', function () {
+           return Schema::hasTable('model_fields_metadata');
+        });
+        if (!$tableExist) {
+            $tableExist = Schema::hasTable('model_fields_metadata');
+            Cache::put('model_fields_metadata_table_exists', $tableExist);
+        }
+        if (config('model-fields.enabled') && $tableExist && class_exists(Cache::class, false)) {
             $key = sprintf("modelfields.%s", $class_type);
 
             return Cache::rememberForever($key, function () use ($class_type) {
-                return Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
+                try {
+                    return Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
+                } catch (QueryException $qe) {
+                    // If table not exist set in cache value to false
+                    Cache::put('model_fields_metadata_table_exists', false);
+                }
+                return collect([]);
             });
         }
 
