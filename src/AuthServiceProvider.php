@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
         Metadata::class => MetadataPolicy::class,
     ];
 
-    public function boot()
+    public function boot(): void
     {
         $this->registerPolicies();
         if (!$this->app->routesAreCached() && method_exists(Passport::class, 'routes')) {

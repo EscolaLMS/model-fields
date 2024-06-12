@@ -23,6 +23,7 @@ class ModelFieldsApiController extends EscolaLmsBaseController implements ModelF
 
     public function list(MetadataListRequest $request): JsonResponse
     {
+        /** @var string|false $classType */
         $classType = $request->get('class_type');
         if (empty($classType)) {
             return $this->sendError("class_type is required", 400);
