@@ -50,7 +50,7 @@ interface ModelFieldsApiContract
      *      ),
      * )
      *
-     * @param TemplateListingRequest $request
+     * @param MetadataListRequest $request
      * @return JsonResponse
      */
     public function list(MetadataListRequest $request): JsonResponse;

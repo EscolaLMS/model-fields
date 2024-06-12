@@ -12,7 +12,10 @@ use EscolaLms\ModelFields\Services\ModelFieldsService;
 
 class ModelFieldsServiceProvider extends ServiceProvider
 {
-    public $singletons = [
+    /**
+     * @var string[]
+     */
+    public array $singletons = [
         ModelFieldsServiceContract::class => ModelFieldsService::class,
     ];
 
@@ -21,7 +24,7 @@ class ModelFieldsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
@@ -32,7 +35,7 @@ class ModelFieldsServiceProvider extends ServiceProvider
         ]);
     }
 
-    public function register()
+    public function register(): void
     {
         $this->app->register(AuthServiceProvider::class);
 

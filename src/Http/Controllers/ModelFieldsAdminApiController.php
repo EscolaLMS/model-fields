@@ -23,11 +23,14 @@ class ModelFieldsAdminApiController extends EscolaLmsBaseController implements M
 
     public function list(MetadataListRequest $request): JsonResponse
     {
+        /** @var string $classType */
         $classType = $request->get('class_type');
         if (empty($classType)) {
             return $this->sendError("class_type is required", 400);
         }
-        $metaFields = $this->service->getFieldsMetadataListPaginated($classType, $request->get('per_page', 15), OrderDto::instantiateFromRequest($request));
+        /** @var int $perPage */
+        $perPage = $request->get('per_page', 15);
+        $metaFields = $this->service->getFieldsMetadataListPaginated($classType, $perPage, OrderDto::instantiateFromRequest($request));
         return $this->sendResponseForResource(MetadataResource::collection($metaFields), "metaFields list retrieved successfully");
     }
 

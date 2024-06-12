@@ -7,6 +7,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MetadataResource extends JsonResource
 {
+    /** @var Metadata $resource  */
+    public $resource;
+
     public function __construct(Metadata $metadata)
     {
         $this->resource = $metadata;
@@ -15,15 +18,15 @@ class MetadataResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'type'  => $this->type,
-            'rules' => $this->rules,
-            'extra' => $this->extra,
-            'default' => $this->default,
-            'class_type' => $this->class_type,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'id' => $this->resource->getKey(),
+            'name' => $this->resource->name,
+            'type'  => $this->resource->type,
+            'rules' => $this->resource->rules,
+            'extra' => $this->resource->extra,
+            'default' => $this->resource->default,
+            'class_type' => $this->resource->class_type,
+            'created_at' => $this->resource->created_at,
+            'updated_at' => $this->resource->updated_at,
         ];
     }
 }
