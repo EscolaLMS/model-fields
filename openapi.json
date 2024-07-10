@@ -281,5 +281,15 @@
                 "type": "object"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Model Fields",
+            "description": "Model Fields"
+        },
+        {
+            "name": "Admin Model Fields",
+            "description": "Admin Model Fields"
+        }
+    ]
 }
