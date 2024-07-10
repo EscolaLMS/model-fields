@@ -88,7 +88,7 @@ interface ModelFieldsAdminApiContract
      *      ),
      * )
      *
-     * @param TemplateListingRequest $request
+     * @param MetadataListRequest $request
      * @return JsonResponse
      */
     public function list(MetadataListRequest $request): JsonResponse;
@@ -168,7 +168,7 @@ interface ModelFieldsAdminApiContract
      *      ),
      * )
      *
-     * @param MetadataCreateOrUpdateRequest $request
+     * @param MetadataDeleteRequest $request
      * @return JsonResponse
      */
     public function delete(MetadataDeleteRequest $request): JsonResponse;

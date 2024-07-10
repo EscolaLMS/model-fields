@@ -3,6 +3,7 @@
 namespace EscolaLms\ModelFields\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @OA\Schema(
@@ -53,6 +54,15 @@ use Illuminate\Database\Eloquent\Model;
  *          type="string"
  *      ),
  * )
+ *
+ * @property string $name
+ * @property string $type
+ * @property array $rules
+ * @property array $extra
+ * @property string $default
+ * @property string $class_type
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class Metadata extends Model
 {

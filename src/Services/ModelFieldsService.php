@@ -12,13 +12,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class ModelFieldsService implements ModelFieldsServiceContract
 {
-    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, $visibility = 1 << 0, array $extra = null): Metadata
+    public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, int $visibility = 1 << 0, array $extra = null): Metadata
     {
         if (!MetaFieldTypeEnum::hasValue($type)) {
             throw ValidationException::withMessages([
@@ -53,7 +52,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
     {
         // add result of hasTable to the cache to limit database queries
         $tableExist = Cache::rememberForever('model_fields_metadata_table_exists', function () {
-           return Schema::hasTable('model_fields_metadata');
+            return Schema::hasTable('model_fields_metadata');
         });
         if (!$tableExist) {
             $tableExist = Schema::hasTable('model_fields_metadata');
@@ -64,7 +63,8 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
             return Cache::rememberForever($key, function () use ($class_type) {
                 try {
-                    return Metadata::whereIn('class_type', array_merge([$class_type], class_parents($class_type)))->get();
+                    $classTypes = class_parents($class_type) ? array_merge([$class_type], class_parents($class_type)) : [$class_type];
+                    return Metadata::whereIn('class_type', $classTypes)->get();
                 } catch (QueryException $qe) {
                     // If table not exist set in cache value to false
                     Cache::put('model_fields_metadata_table_exists', false);
@@ -82,8 +82,9 @@ class ModelFieldsService implements ModelFieldsServiceContract
             return collect([]);
         }
 
+        $classTypes = class_parents($class_type) ? array_merge([$class_type], class_parents($class_type)) : [$class_type];
         $query = Metadata::query()
-            ->whereIn('class_type', array_merge([$class_type], class_parents($class_type)))
+            ->whereIn('class_type', $classTypes)
             ->orderBy($orderDto?->getOrderBy() ?? 'id', $orderDto?->getOrder() ?? 'asc');
 
         return $query->paginate($perPage);
@@ -100,7 +101,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
         return [];
     }
 
-    public function castField($value, ?Metadata $field)
+    public function castField(mixed $value, ?Metadata $field): mixed
     {
         $type = $field['type'] ?? null;
         switch ($type) {
@@ -117,12 +118,15 @@ class ModelFieldsService implements ModelFieldsServiceContract
         }
     }
 
-    private function checkVisibility(int $visibility = null, int $metadataFieldVisibility): bool
+    private function checkVisibility(?int $visibility = null, int $metadataFieldVisibility): int|bool
     {
         return is_int($visibility) ? $visibility & $metadataFieldVisibility : true;
     }
 
-    public function getExtraAttributesValues(Model $model, $visibility = null): array
+    /**
+     * @return array<string, string>
+     */
+    public function getExtraAttributesValues(Model $model, ?int $visibility = null): array
     {
         if (config('model-fields.enabled')) {
             if (!array_key_exists('id', $model->getAttributes())) {
@@ -146,7 +150,8 @@ class ModelFieldsService implements ModelFieldsServiceContract
                 ->mapWithKeys(fn($item, $key) => [$item['name'] => self::castField($item['default'], $item)])
                 ->toArray();
 
-            $modelFields = Cache::rememberForever($key, function () use ($class, $model, $visibility) {
+            $modelFields = Cache::rememberForever($key, function () use ($model) {
+                // @phpstan-ignore-next-line
                 return $model->fields()->get();
             });
 

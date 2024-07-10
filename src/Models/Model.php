@@ -3,6 +3,7 @@
 namespace EscolaLms\ModelFields\Models;
 
 use Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use Illuminate\Support\Facades\App;
@@ -34,13 +35,19 @@ abstract class Model extends BaseModel
         return array_merge($attributes, $extraAttributes);
     }
 
-    private function convertValueForFill($value, array $field): string
+    /**
+     * @param mixed $value
+     * @param array<string, MetaFieldTypeEnum> $field
+     *
+     * @return string
+     */
+    private function convertValueForFill(mixed $value, array $field): string
     {
 
         $type = $field['type'];
         switch ($type) {
             case MetaFieldTypeEnum::JSON:
-                return json_encode($value);
+                return json_encode($value) ?: "";
             case MetaFieldTypeEnum::BOOLEAN:
                 return $value ? "true" : "";
             case MetaFieldTypeEnum::NUMBER:
@@ -121,12 +128,12 @@ abstract class Model extends BaseModel
         parent::delete();
     }
 
-    public function fields()
+    public function fields(): MorphMany
     {
         return $this->morphMany(Field::class, 'class');
     }
 
-    public static function firstOrCreate(array $attributes = [], array $values = [])
+    public static function firstOrCreate(array $attributes = [], array $values = []): \Illuminate\Database\Eloquent\Model
     {
         $service = App::make(ModelFieldsServiceContract::class);
         $modelFieldKeys = $service->getFieldsMetadata(static::class)->pluck('name')->toArray();
