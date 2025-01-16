@@ -20,6 +20,12 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public static $cache = ['metadata' => [], 'fields' => []];
 
+    public static function clearCache(): void
+    {
+        Cache::flush();
+        self::$cache = ['metadata' => [], 'fields' => []];
+    }
+
     public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, int $visibility = 1 << 0, array $extra = null): Metadata
     {
         if (!MetaFieldTypeEnum::hasValue($type)) {
@@ -28,8 +34,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
             ]);
         }
 
-        Cache::flush();
-        self::$cache = ['metadata' => [], 'fields' => []];
+        self::clearCache();
 
         return Metadata::updateOrCreate(
             ['class_type' => $class_type, 'name' => $name],
@@ -47,8 +52,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
             ['class_type' => $class_type, 'name' => $name]
         )->delete();
 
-        Cache::flush();
-        self::$cache = ['metadata' => [], 'fields' => []];
+        self::clearCache();
 
         return $bool;
     }
