@@ -59,11 +59,14 @@ class ModelFieldsService implements ModelFieldsServiceContract
 
     public function getFieldsMetadata(string $class_type): Collection
     {
-        if (isset(self::$cache['metadata'][$class_type])) {
-            return self::$cache['metadata'][$class_type];
-        }
+
 
         if (config('model-fields.enabled') && /*$tableExist &&*/ class_exists(Cache::class, false)) {
+
+            if (isset(self::$cache['metadata'][$class_type])) {
+                return self::$cache['metadata'][$class_type];
+            }
+
             $key = sprintf("modelfields.%s", $class_type);
 
             $cachedValue = Cache::get($key);
@@ -142,7 +145,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
             }
 
             $class = get_class($model);
-            $key = sprintf("modelfieldsvalues.%s.%s", $class, $model->getKey());
+            $key = $visibility ? sprintf("modelfieldsvalues.%s.%s.%s", $class, $model->getKey(), $visibility) : sprintf("modelfieldsvalues.%s.%s", $class, $model->getKey());
 
             if (isset(self::$cache['values'][$key])) {
                 return self::$cache['values'][$key];

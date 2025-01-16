@@ -90,11 +90,11 @@ class ResourceApiTest extends TestCase
 
         $result = $this->getJson('/api/test-users');
 
-        $this->assertTrue(!collect($result->getData())->contains(fn ($item) => isset($item->admin_secret) && $item->admin_secret === 'XXX'));
+        $this->assertTrue(!collect($result->getData())->contains(fn($item) => isset($item->admin_secret) && $item->admin_secret === 'XXX'));
 
         $result = $this->getJson('/api/admin/test-users');
 
-        $this->assertTrue(collect($result->getData())->contains(fn ($item) => isset($item->admin_secret) && $item->admin_secret === 'XXX'));
+        $this->assertTrue(collect($result->getData())->contains(fn($item) => isset($item->admin_secret) && $item->admin_secret === 'XXX'));
     }
 
     public function testCreateRules()

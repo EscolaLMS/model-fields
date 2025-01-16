@@ -164,7 +164,6 @@ abstract class Model extends BaseModel
     private function clearModelFieldsValuesCache(): void
     {
         if ($this->exists) {
-            Cache::flush();
             ModelFieldsService::clearCache();
         }
     }

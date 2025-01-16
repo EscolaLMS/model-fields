@@ -77,6 +77,7 @@ class ModelFieldsApiTest extends TestCase
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
         $this->assertEmpty($result->getData()->data);
 
+
         Config::set('model-fields.enabled', true);
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
         $this->assertEquals(count($result->getData()->data), count($metaFields));
@@ -160,7 +161,7 @@ class ModelFieldsApiTest extends TestCase
     {
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
 
-        $this->assertEquals(collect($result->getData()->data)->contains(fn ($item) => $item->name === 'description'), true);
+        $this->assertEquals(collect($result->getData()->data)->contains(fn($item) => $item->name === 'description'), true);
 
         $input = [
             'class_type' => User::class,
@@ -172,6 +173,6 @@ class ModelFieldsApiTest extends TestCase
 
         $result = $this->getJson('/api/model-fields?' . http_build_query(['class_type' => User::class]));
 
-        $this->assertEquals(collect($result->getData()->data)->contains(fn ($item) => $item->name === 'description'), false);
+        $this->assertEquals(collect($result->getData()->data)->contains(fn($item) => $item->name === 'description'), false);
     }
 }
