@@ -9,6 +9,7 @@ use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use Illuminate\Support\Facades\App;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use Illuminate\Support\Facades\Cache;
+use  EscolaLms\ModelFields\Services\ModelFieldsService;
 
 abstract class Model extends BaseModel
 {
@@ -63,12 +64,12 @@ abstract class Model extends BaseModel
     {
         $fields = $this->service
             ->getFieldsMetadata(static::class)
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item])
+            ->mapWithKeys(fn($item, $key) =>  [$item['name'] => $item])
             ->toArray();
 
         $this->extraFields = collect($attributes)
-            ->filter(fn ($item, $key) => in_array($key, array_keys($fields)))
-            ->map(fn ($item, $key) => ['name' => $key, 'value' =>  self::convertValueForFill($item, $fields[$key])]);
+            ->filter(fn($item, $key) => in_array($key, array_keys($fields)))
+            ->map(fn($item, $key) => ['name' => $key, 'value' =>  self::convertValueForFill($item, $fields[$key])]);
 
         return parent::fill($attributes);
     }
@@ -80,7 +81,7 @@ abstract class Model extends BaseModel
         $savedState = parent::save($options);
         $this->clearModelFieldsValuesCache();
         $values = $extraFields->toArray();
-        $names = $extraFields->map(fn ($item) => $item['name'])->toArray();
+        $names = $extraFields->map(fn($item) => $item['name'])->toArray();
         $this->fields()->whereIn('name', $names)->delete();
         $this->fields()->createMany($values);
 
@@ -108,7 +109,7 @@ abstract class Model extends BaseModel
 
         $metaFields = $this->service
             ->getFieldsMetadata(static::class)
-            ->mapWithKeys(fn ($item) =>  [$item['name'] => $item])
+            ->mapWithKeys(fn($item) =>  [$item['name'] => $item])
             ->toArray();
 
         if (array_key_exists($key, $metaFields)) {
@@ -144,7 +145,7 @@ abstract class Model extends BaseModel
 
         if ($instance = $query->first()) {
             foreach ($additionalAttributes as $key => $value) {
-                $query = $query->whereHas('fields', function ($query) use ($key, $value){
+                $query = $query->whereHas('fields', function ($query) use ($key, $value) {
                     return $query->where([
                         ['name', '=', $key],
                         ['value', '=', $value],
@@ -163,7 +164,7 @@ abstract class Model extends BaseModel
     private function clearModelFieldsValuesCache(): void
     {
         if ($this->exists) {
-            Cache::flush();
+            ModelFieldsService::clearCache();
         }
     }
 }

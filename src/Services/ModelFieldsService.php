@@ -17,6 +17,15 @@ use Illuminate\Validation\ValidationException;
 
 class ModelFieldsService implements ModelFieldsServiceContract
 {
+
+    public static $cache = ['metadata' => [], 'fields' => []];
+
+    public static function clearCache(): void
+    {
+        Cache::flush();
+        self::$cache = ['metadata' => [], 'fields' => []];
+    }
+
     public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, int $visibility = 1 << 0, array $extra = null): Metadata
     {
         if (!MetaFieldTypeEnum::hasValue($type)) {
@@ -25,7 +34,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
             ]);
         }
 
-        Cache::flush();
+        self::clearCache();
 
         return Metadata::updateOrCreate(
             ['class_type' => $class_type, 'name' => $name],
@@ -43,34 +52,35 @@ class ModelFieldsService implements ModelFieldsServiceContract
             ['class_type' => $class_type, 'name' => $name]
         )->delete();
 
-        Cache::flush();
+        self::clearCache();
 
         return $bool;
     }
 
     public function getFieldsMetadata(string $class_type): Collection
     {
-        // add result of hasTable to the cache to limit database queries
-        $tableExist = Cache::rememberForever('model_fields_metadata_table_exists', function () {
-            return Schema::hasTable('model_fields_metadata');
-        });
-        if (!$tableExist) {
-            $tableExist = Schema::hasTable('model_fields_metadata');
-            Cache::put('model_fields_metadata_table_exists', $tableExist);
-        }
-        if (config('model-fields.enabled') && $tableExist && class_exists(Cache::class, false)) {
+
+
+        if (config('model-fields.enabled') && /*$tableExist &&*/ class_exists(Cache::class, false)) {
+
+            if (isset(self::$cache['metadata'][$class_type])) {
+                return self::$cache['metadata'][$class_type];
+            }
+
             $key = sprintf("modelfields.%s", $class_type);
 
-            return Cache::rememberForever($key, function () use ($class_type) {
-                try {
-                    $classTypes = class_parents($class_type) ? array_merge([$class_type], class_parents($class_type)) : [$class_type];
-                    return Metadata::whereIn('class_type', $classTypes)->get();
-                } catch (QueryException $qe) {
-                    // If table not exist set in cache value to false
-                    Cache::put('model_fields_metadata_table_exists', false);
-                }
-                return collect([]);
-            });
+            $cachedValue = Cache::get($key);
+
+            if ($cachedValue) {
+                self::$cache['metadata'][$class_type] = $cachedValue;
+                return $cachedValue;
+            }
+
+            $classTypes = class_parents($class_type) ? array_merge([$class_type], class_parents($class_type)) : [$class_type];
+            $values = Metadata::whereIn('class_type', $classTypes)->get();
+            Cache::put($key, $values);
+            self::$cache['metadata'][$class_type] = $values;
+            return $values;
         }
 
         return collect([]);
@@ -128,13 +138,18 @@ class ModelFieldsService implements ModelFieldsServiceContract
      */
     public function getExtraAttributesValues(Model $model, ?int $visibility = null): array
     {
+
         if (config('model-fields.enabled')) {
             if (!array_key_exists('id', $model->getAttributes())) {
                 return [];
             }
 
             $class = get_class($model);
-            $key = sprintf("modelfieldsvalues.%s.%s", $class, $model->getKey());
+            $key = $visibility ? sprintf("modelfieldsvalues.%s.%s.%s", $class, $model->getKey(), $visibility) : sprintf("modelfieldsvalues.%s.%s", $class, $model->getKey());
+
+            if (isset(self::$cache['values'][$key])) {
+                return self::$cache['values'][$key];
+            }
 
             $fieldsCol = self::getFieldsMetadata($class);
             $fields = $fieldsCol
@@ -150,6 +165,7 @@ class ModelFieldsService implements ModelFieldsServiceContract
                 ->mapWithKeys(fn($item, $key) => [$item['name'] => self::castField($item['default'], $item)])
                 ->toArray();
 
+
             $modelFields = Cache::rememberForever($key, function () use ($model) {
                 // @phpstan-ignore-next-line
                 return $model->fields()->get();
@@ -160,7 +176,11 @@ class ModelFieldsService implements ModelFieldsServiceContract
                 ->mapWithKeys(fn($item, $key) => [$item['name'] => self::castField($item['value'], ($fields[$item['name']] ?? null))])
                 ->toArray();
 
-            return array_merge($defaults, $extraAttributes);
+            $values = array_merge($defaults, $extraAttributes);
+
+            self::$cache['values'][$key] = $values;
+
+            return $values;
         }
 
         return [];

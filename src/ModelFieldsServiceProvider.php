@@ -38,7 +38,6 @@ class ModelFieldsServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(AuthServiceProvider::class);
-
         $this->mergeConfigFrom(
             __DIR__ . '/../config/model-fields.php',
             'model-fields'

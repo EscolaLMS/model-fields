@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use EscolaLms\ModelFields\Enum\MetaFieldTypeEnum;
 use EscolaLms\ModelFields\Facades\ModelFields as ModelFieldsFacade;
 use Illuminate\Support\Facades\Cache;
+use  EscolaLms\ModelFields\Services\ModelFieldsService;
 
 trait ModelFields
 {
@@ -45,12 +46,12 @@ trait ModelFields
     public function fill(array $attributes)
     {
         $fields = ModelFieldsFacade::getFieldsMetadata(self::class)
-            ->mapWithKeys(fn ($item, $key) =>  [$item['name'] => $item])
+            ->mapWithKeys(fn($item, $key) =>  [$item['name'] => $item])
             ->toArray();
 
         $this->extraFields = collect($attributes)
-            ->filter(fn ($item, $key) => in_array($key, array_keys($fields)))
-            ->map(fn ($item, $key) => ['name' => $key, 'value' =>  self::convertValueForFill($item, $fields[$key])]);
+            ->filter(fn($item, $key) => in_array($key, array_keys($fields)))
+            ->map(fn($item, $key) => ['name' => $key, 'value' =>  self::convertValueForFill($item, $fields[$key])]);
 
         return parent::fill($attributes);
     }
@@ -62,7 +63,7 @@ trait ModelFields
         $savedState = parent::save($options);
         $this->clearModelFieldsValuesCache();
         $values = $extraFields->toArray();
-        $names = $extraFields->map(fn ($item) => $item['name'])->toArray();
+        $names = $extraFields->map(fn($item) => $item['name'])->toArray();
         $this->fields()->whereIn('name', $names)->delete();
         $this->fields()->createMany($values);
 
@@ -89,7 +90,7 @@ trait ModelFields
         $this->clearModelFieldsValuesCache();
 
         $metaFields =  ModelFieldsFacade::getFieldsMetadata(static::class)
-            ->mapWithKeys(fn ($item) =>  [$item['name'] => $item])
+            ->mapWithKeys(fn($item) =>  [$item['name'] => $item])
             ->toArray();
 
         if (array_key_exists($key, $metaFields)) {
@@ -124,7 +125,7 @@ trait ModelFields
 
         if ($instance = $query->first()) {
             foreach ($additionalAttributes as $key => $value) {
-                $query = $query->whereHas('fields', function ($query) use ($key, $value){
+                $query = $query->whereHas('fields', function ($query) use ($key, $value) {
                     return $query->where([
                         ['name', '=', $key],
                         ['value', '=', $value],
@@ -143,7 +144,7 @@ trait ModelFields
     private function clearModelFieldsValuesCache(): void
     {
         if ($this->exists) {
-            Cache::flush();
+            ModelFieldsService::clearCache();
         }
     }
 }
