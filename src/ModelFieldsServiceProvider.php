@@ -5,7 +5,7 @@ namespace EscolaLms\ModelFields;
 use Illuminate\Support\ServiceProvider;
 use EscolaLms\ModelFields\Services\Contracts\ModelFieldsServiceContract;
 use EscolaLms\ModelFields\Services\ModelFieldsService;
-use EscolaLms\ModelFields\Commands\MigrateFromV1toV2;
+//use EscolaLms\ModelFields\Commands\MigrateFromV1toV2;
 
 /**
  * SWAGGER_VERSION
@@ -39,7 +39,7 @@ class ModelFieldsServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->register(AuthServiceProvider::class);
-        $this->commands([MigrateFromV1toV2::class]);
+        //$this->commands([MigrateFromV1toV2::class]);
         $this->mergeConfigFrom(
             __DIR__ . '/../config/model-fields.php',
             'model-fields'
