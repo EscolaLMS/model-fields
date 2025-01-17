@@ -18,12 +18,12 @@ use Illuminate\Validation\ValidationException;
 class ModelFieldsService implements ModelFieldsServiceContract
 {
 
-    public static $cache = ['metadata' => [], 'fields' => []];
+    public static $cache = ['metadata' => [], 'fields' => [], 'table_exists' => null];
 
     public static function clearCache(): void
     {
         Cache::flush();
-        self::$cache = ['metadata' => [], 'fields' => []];
+        self::$cache = ['metadata' => [], 'fields' => [], 'table_exists' => null];
     }
 
     public function addOrUpdateMetadataField(string $class_type, string $name, string $type, string $default = '', array $rules = null, int $visibility = 1 << 0, array $extra = null): Metadata
@@ -60,8 +60,19 @@ class ModelFieldsService implements ModelFieldsServiceContract
     public function getFieldsMetadata(string $class_type): Collection
     {
 
+        // add result of hasTable to the cache to limit database queries
+        if (self::$cache['table_exists'] !== null) {
+            $tableExist = self::$cache['table_exists'];
+        } else if (is_bool($cachedTE = Cache::get('model_fields_metadata_table_exists'))) {
+            $tableExist = $cachedTE;
+            self::$cache['table_exists'] = $tableExist;
+        } else {
+            $tableExist = Schema::hasTable('model_fields_metadata');
+            self::$cache['table_exists'] = $tableExist;
+            Cache::put('model_fields_metadata_table_exists', $tableExist);
+        }
 
-        if (config('model-fields.enabled') && /*$tableExist &&*/ class_exists(Cache::class, false)) {
+        if (config('model-fields.enabled') && $tableExist && class_exists(Cache::class, false)) {
 
             if (isset(self::$cache['metadata'][$class_type])) {
                 return self::$cache['metadata'][$class_type];
